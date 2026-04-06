@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Dashboard</title>
+  <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <button class="nav-icon active" aria-label="Dashboard"></button>
+      <button class="nav-icon" aria-label="Analytics"></button>
+      <button class="nav-icon" aria-label="Team"></button>
+      <button class="nav-icon" aria-label="Health"></button>
+      <button class="nav-icon" aria-label="Reports"></button>
+      <button class="nav-icon bottom" aria-label="Settings"></button>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <nav class="tabs">
+          <a class="tab active" href="#" data-key="Live">En Vivo</a>
+          <a class="tab" href="#" data-key="Calendar">Calendario</a>
+          <a class="tab" href="#" data-key="Reports">Informes</a>
+        </nav>
+        <div class="system-chip" data-key="System Status: Optimal">Estado del sistema: Óptimo</div>
+      </header>
+
+      <main class="dashboard-grid">
+        <section class="card player-card">
+          <div class="player-photo" aria-label="Player image placeholder">
+            <div class="ovr-circle">
+              <span>91</span>
+              <small data-key="OVR Rating">OVR Rating</small>
+            </div>
+
+            <div class="player-info">
+              <p class="player-team">TEAM VELOCITY / EI</p>
+              <p class="player-name">NICOLÁS LEIVA</p>
+            </div>
+          </div>
+
+          <div class="status-row">
+            <article class="status-card">
+              <h4 data-key="Form Status">Form Status</h4>
+              <p>A+</p>
+            </article>
+            <article class="status-card">
+              <h4 data-key="Match Load">Match Load</h4>
+              <p>92%</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card radar-card">
+          <header class="card-header">
+            <h2 data-key="Attributes Analysis">Análisis de Atributos</h2>
+          </header>
+
+          <div class="radar-placeholder" aria-label="Radar chart placeholder"></div>
+
+          <div class="split-metrics">
+            <div class="metric-item">
+              <span data-key="Top Sprint Speed">Velocidad punta</span>
+              <strong>36.4 km/h</strong>
+            </div>
+            <div class="metric-item">
+              <span data-key="Pass Accuracy">Precisión de pase</span>
+              <strong>88.2%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="right-stack">
+          <article class="card biometrics-card">
+            <header class="card-header">
+              <h2 data-key="Biometrics">Biometría</h2>
+            </header>
+
+            <div class="bio-row">
+              <div class="bio-head">
+                <span data-key="Height">Altura</span>
+                <strong>185 CM</strong>
+              </div>
+              <div class="progress-track"><div class="progress-fill cyan" style="width: 85%;"></div></div>
+            </div>
+
+            <div class="bio-row">
+              <div class="bio-head">
+                <span data-key="Weight">Peso</span>
+                <strong>80 KG</strong>
+              </div>
+              <div class="progress-track"><div class="progress-fill cyan" style="width: 72%;"></div></div>
+            </div>
+
+            <div class="bio-row">
+              <div class="bio-head">
+                <span data-key="BMI Index">Índice IMC</span>
+                <strong>23.4</strong>
+              </div>
+              <div class="progress-track"><div class="progress-fill cyan" style="width: 60%;"></div></div>
+            </div>
+          </article>
+
+          <article class="card recovery-card">
+            <header class="card-header">
+              <h2 data-key="Recovery Telemetry">Telemetría de recuperación</h2>
+            </header>
+
+            <div class="recovery-item">
+              <span data-key="Energy Level">Nivel de energía</span>
+              <strong>94% Capacidad</strong>
+            </div>
+            <div class="recovery-item">
+              <span data-key="Sleep Quality">Calidad de sueño</span>
+              <strong>8.2 Hrs Prom.</strong>
+            </div>
+            <div class="recovery-item danger">
+              <span data-key="Injury Risk">Riesgo de lesión</span>
+              <strong>Bajo (12%)</strong>
+            </div>
+          </article>
+        </section>
+
+        <footer class="footer-grid">
+          <article class="small-card">
+            <h4 data-key="Max Heart Rate">Ritmo Cardíaco Máx.</h4>
+            <p>198 <span>BPM</span></p>
+          </article>
+          <article class="small-card">
+            <h4 data-key="Total Distance">Distancia Total</h4>
+            <p>11.4 <span>KM</span></p>
+          </article>
+          <article class="small-card">
+            <h4 data-key="Sprints">Contador de Sprints</h4>
+            <p>42 <span>X</span></p>
+          </article>
+          <article class="small-card">
+            <h4 data-key="Hydration Level">Nivel de Hidratación</h4>
+            <p>91 <span>%</span></p>
+          </article>
+        </footer>
+      </main>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcademIA - Motor de Sesiones</title>
+  <style>
+    :root {
+      --bg: #050a15;
+      --panel: #121f39;
+      --panel-2: #0f1c35;
+      --stroke: #1d3a64;
+      --text: #e6efff;
+      --muted: #8fa6cf;
+      --accent: #42c8ff;
+      --ok: #62ffb0;
+      --warn: #ffd77a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 560px at 55% 120%, #0a1e3c 0%, transparent 65%),
+        var(--bg);
+      padding: 24px;
+    }
+
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, #132644, #0f1d35);
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .player-card {
+      position: relative;
+      min-height: 520px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(6, 12, 26, 0.1), rgba(6, 12, 26, 0.86)),
+        radial-gradient(580px 320px at 50% 0%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0)),
+        #0d1a31;
+    }
+
+    .ovr-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      border: 3px solid var(--accent);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      position: absolute;
+      top: 18px;
+      left: 18px;
+    }
+
+    .ovr-circle strong {
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .ovr-circle span {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.7rem;
+      color: #abd8ea;
+    }
+
+    .player-info {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    .player-info p {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #adc1e6;
+      font-size: 0.8rem;
+    }
+
+    .player-info h1 {
+      margin: 8px 0 14px;
+      max-width: 260px;
+      font-size: 2.6rem;
+      line-height: 0.96;
+      text-transform: uppercase;
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(12, 25, 47, 0.8);
+      border: 1px solid #264a7a;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .chip small {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.68rem;
+    }
+
+    .chip strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.9rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .radar h2 {
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 1.05rem;
+    }
+
+    .radar-wrap {
+      border: 1px solid #244771;
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(12, 25, 47, 0.72);
+    }
+
+    svg {
+      width: 100%;
+      max-height: 440px;
+      display: block;
+    }
+
+    .session-panel h3 {
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 1rem;
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .row.cols-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .row.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    button,
+    select,
+    input {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #2b4c79;
+      background: #122544;
+      color: #f0f5ff;
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    .button-toggle {
+      background: #102140;
+      cursor: pointer;
+    }
+
+    .button-toggle.active {
+      border-color: #4ccfff;
+      box-shadow: 0 0 0 1px rgba(76, 207, 255, 0.35) inset;
+    }
+
+    .upload-box {
+      border: 1px dashed #3a5f8d;
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(15, 30, 56, 0.65);
+      text-align: center;
+    }
+
+    .upload-box label {
+      display: inline-block;
+      cursor: pointer;
+      color: #b7dcff;
+      font-weight: 600;
+    }
+
+    .status {
+      min-height: 24px;
+      color: #cae5ff;
+      font-size: 0.95rem;
+    }
+
+    .fatigue {
+      color: var(--warn);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="top">
+      <article class="panel player-card">
+        <div class="ovr-circle">
+          <strong id="ovrValue">0</strong>
+          <span>OVR</span>
+        </div>
+        <div class="player-info">
+          <p id="playerTeam">Equipo</p>
+          <h1 id="playerName">Jugador</h1>
+          <div class="chips">
+            <div class="chip">
+              <small>Tier</small>
+              <strong id="tierValue">Academia</strong>
+            </div>
+            <div class="chip">
+              <small>Fatiga</small>
+              <strong class="fatigue" id="fatigueValue">0</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel radar">
+        <h2>Análisis por Categoría</h2>
+        <div class="radar-wrap">
+          <svg viewBox="0 0 520 430" aria-label="Radar categorías">
+            <g id="radarGrid"></g>
+            <g id="radarAxes"></g>
+            <polygon id="radarShape" fill="rgba(66,200,255,0.25)" stroke="#42c8ff" stroke-width="3"></polygon>
+            <g id="radarLabels"></g>
+          </svg>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel session-panel">
+      <h3>Sesiones, Suscripción y Video IA</h3>
+
+      <div class="row cols-2">
+        <div>
+          <label for="userModeSelect">Modo de usuario</label>
+          <select id="userModeSelect">
+            <option value="academia">academia</option>
+            <option value="solo">solo</option>
+          </select>
+        </div>
+        <div>
+          <label for="attributeSelect">Atributo a entrenar</label>
+          <select id="attributeSelect"></select>
+        </div>
+      </div>
+
+      <div class="row cols-2">
+        <button class="button-toggle active" id="typeTrainingBtn" data-type="Entrenamiento">Entrenamiento</button>
+        <button class="button-toggle" id="typeMatchBtn" data-type="Partido">Partido</button>
+      </div>
+
+      <div class="row cols-3">
+        <button class="button-toggle active" id="format5Btn" data-format="Fútbol 5">Fútbol 5</button>
+        <button class="button-toggle" id="format7Btn" data-format="Fútbol 7">Fútbol 7</button>
+        <button class="button-toggle" id="format11Btn" data-format="Fútbol 11">Fútbol 11</button>
+      </div>
+
+      <div class="row cols-3">
+        <input id="sessionDate" type="date">
+        <input id="sessionTime" type="time">
+        <input id="sessionDuration" type="number" min="10" step="5" value="90" placeholder="Duración (min)">
+      </div>
+
+      <div class="row cols-2">
+        <button id="registerSessionBtn">Registrar Sesión</button>
+        <button id="resetDataBtn">Reset Player Data</button>
+      </div>
+
+      <div class="upload-box">
+        <label for="videoInput">Subir Video</label>
+        <input id="videoInput" type="file" accept="video/*" style="display:none;">
+      </div>
+
+      <p class="status" id="sessionStatus">Listo para registrar una sesión.</p>
+    </section>
+  </div>
+
+  <script>
+    const PLAYER_STORAGE_KEY = "AcademIA_PlayerData";
+    const TIERS = ["Academia", "Semipro", "Profesional"];
+
+    function createDefaultProfile() {
+      return {
+        Bio: {
+          Nombre: "Nicolás Leiva",
+          Edad: 21,
+          EquipoLocalChile: "Team Velocity / EI"
+        },
+        userMode: "academia", // academia | solo
+        PlayerTier: "Academia",
+        FatigueLevel: 0,
+        Badges: [],
+        SessionLog: [],
+        Stats: {
+          Ritmo: {
+            "Aceleración": 68,
+            "Velocidad de Sprint": 69
+          },
+          Tiro: {
+            "Posicionamiento Ofensivo": 64,
+            "Remates": 66,
+            "Fuerza de Tiro": 70,
+            "Tiros Largos": 62,
+            "Voleas": 60,
+            "Penales": 61
+          },
+          Pases: {
+            "Visión de Juego": 72,
+            "Centros": 63,
+            "Precisión de Tiro Libre": 58,
+            "Pase Corto": 74,
+            "Pase Largo": 68,
+            "Efecto": 64
+          },
+          Regate: {
+            "Agilidad": 71,
+            "Equilibrio": 70,
+            "Capacidad de Reacción": 69,
+            "Control de Balón": 73,
+            "Regates": 72,
+            "Compostura": 67
+          },
+          Defensa: {
+            "Intercepciones": 62,
+            "Precisión de Cabezazo": 59,
+            "Conciencia Defensiva": 61,
+            "Entradas": 63,
+            "Barridas": 60
+          },
+          "Físico": {
+            "Salto": 66,
+            "Resistencia": 73,
+            "Fuerza": 69,
+            "Agresividad": 65
+          }
+        },
+        BackendPower: {},
+        Meta: {
+          LastTraining: null
+        }
+      };
+    }
+
+    function savePlayerData(profile) {
+      localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(profile));
+    }
+
+    function loadPlayerData() {
+      try {
+        const raw = localStorage.getItem(PLAYER_STORAGE_KEY);
+        if (!raw) return createDefaultProfile();
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : createDefaultProfile();
+      } catch {
+        return createDefaultProfile();
+      }
+    }
+
+    function resetPlayerData() {
+      localStorage.removeItem(PLAYER_STORAGE_KEY);
+    }
+
+    function normalizeKey(v) {
+      return String(v || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function flattenStats(stats) {
+      const out = [];
+      for (const [group, attrs] of Object.entries(stats)) {
+        for (const [attr, value] of Object.entries(attrs)) {
+          out.push({ group, attr, value: Number(value) });
+        }
+      }
+      return out;
+    }
+
+    function findStatPath(profile, attributeName) {
+      const target = normalizeKey(attributeName);
+      for (const [group, attrs] of Object.entries(profile.Stats)) {
+        for (const attr of Object.keys(attrs)) {
+          if (normalizeKey(attr) === target) return { group, attr };
+        }
+      }
+      return null;
+    }
+
+    function getAverage(stats) {
+      const values = flattenStats(stats).map((s) => s.value);
+      return values.reduce((a, b) => a + b, 0) / values.length;
+    }
+
+    function checkBadges(profile) {
+      const read = (name) => {
+        const path = findStatPath(profile, name);
+        return path ? Number(profile.Stats[path.group][path.attr]) : 0;
+      };
+
+      const badges = new Set(profile.Badges || []);
+      if (read("Fuerza de Tiro") > 85) badges.add("Cañonero");
+      if (read("Conciencia Defensiva") > 85) badges.add("Muro");
+      if (read("Resistencia") > 85) badges.add("Motor");
+      if (read("Visión de Juego") > 85) badges.add("Mago");
+      if (read("Velocidad de Sprint") > 85) badges.add("Velocista");
+
+      profile.Badges = [...badges];
+      return profile.Badges;
+    }
+
+    function maybePromoteTier(profile) {
+      const avg = getAverage(profile.Stats);
+      const idx = TIERS.indexOf(profile.PlayerTier);
+      if (avg < 90 || idx < 0 || idx >= TIERS.length - 1) return null;
+
+      profile.PlayerTier = TIERS[idx + 1];
+      for (const group of Object.keys(profile.Stats)) {
+        for (const attr of Object.keys(profile.Stats[group])) {
+          profile.Stats[group][attr] = 50;
+        }
+      }
+      return `¡Felicidades! Has alcanzado el rango ${profile.PlayerTier}`;
+    }
+
+    function applyDelta(profile, attributeName, delta) {
+      const path = findStatPath(profile, attributeName);
+      if (!path) return false;
+
+      const before = Number(profile.Stats[path.group][path.attr]);
+      const after = Math.min(100, Number((before + delta).toFixed(1)));
+      profile.Stats[path.group][path.attr] = after;
+      profile.BackendPower[path.attr] = Number((Number(profile.BackendPower[path.attr] || 0) + delta).toFixed(2));
+      return { before, after, path };
+    }
+
+    function registerSession(type, format, metadata) {
+      const clone = JSON.parse(JSON.stringify(appState));
+      const safeType = type === "Partido" ? "Partido" : "Entrenamiento";
+      const safeFormat = ["Fútbol 5", "Fútbol 7", "Fútbol 11"].includes(format) ? format : "Fútbol 7";
+      const fatigueAdd = safeType === "Partido" ? 40 : 20;
+
+      clone.FatigueLevel = Math.min(100, clone.FatigueLevel + fatigueAdd);
+
+      const session = {
+        id: Date.now(),
+        type: safeType,
+        format: safeFormat,
+        metadata: {
+          date: metadata?.date || "",
+          hour: metadata?.hour || "",
+          duration: Number(metadata?.duration || 0)
+        },
+        userMode: clone.userMode,
+        validationStatus: clone.userMode === "academia" ? "pending" : "self-registered"
+      };
+
+      clone.SessionLog.push(session);
+      appState = clone;
+      savePlayerData(appState);
+      return session;
+    }
+
+    function applyMatchFormatBonus(profile, session, fatigueMultiplier) {
+      if (!session || session.type !== "Partido") return;
+
+      let bonuses = [];
+      if (session.format === "Fútbol 11") bonuses = ["Resistencia", "Visión de Juego"];
+      if (session.format === "Fútbol 5") bonuses = ["Agilidad", "Pase Corto"];
+      if (!bonuses.length) return;
+
+      const bonusDelta = Number((0.2 * fatigueMultiplier).toFixed(2));
+      bonuses.forEach((attr) => applyDelta(profile, attr, bonusDelta));
+    }
+
+    function processTrainingUpdate(profile, training = {}, session = null) {
+      const clone = JSON.parse(JSON.stringify(profile));
+      const baseDelta = Math.max(0.1, Math.min(0.3, Number(training.delta ?? 0.2)));
+      const fatigueMultiplier = clone.FatigueLevel > 80 ? 0.5 : 1;
+      const finalDelta = Number((baseDelta * fatigueMultiplier).toFixed(2));
+
+      const change = applyDelta(clone, training.attribute, finalDelta);
+      if (!change) {
+        return { updatedProfile: clone, message: "Atributo inválido para entrenamiento." };
+      }
+
+      applyMatchFormatBonus(clone, session, fatigueMultiplier);
+      if (change.before <= 85 && change.after > 85) checkBadges(clone);
+
+      const tierMessage = maybePromoteTier(clone);
+      clone.Meta.LastTraining = {
+        attribute: change.path.attr,
+        delta: finalDelta,
+        fatigueMultiplier,
+        at: new Date().toISOString()
+      };
+
+      const msg = tierMessage ||
+        `Progreso detectado: Tu ${change.path.attr} subió a ${change.after}.`;
+
+      savePlayerData(clone);
+      return { updatedProfile: clone, message: msg };
+    }
+
+    function categoryAverage(profile, groupName) {
+      const obj = profile.Stats[groupName] || {};
+      const values = Object.values(obj).map(Number);
+      return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+    }
+
+    function createRadarBase() {
+      const grid = document.getElementById("radarGrid");
+      const axes = document.getElementById("radarAxes");
+      const labels = document.getElementById("radarLabels");
+      grid.innerHTML = "";
+      axes.innerHTML = "";
+      labels.innerHTML = "";
+
+      const cx = 260;
+      const cy = 210;
+      const radius = 150;
+      const axisCount = 6;
+      const levels = 5;
+      const names = ["RITMO", "TIRO", "PASES", "REGATE", "DEFENSA", "FÍSICO"];
+
+      for (let level = 1; level <= levels; level += 1) {
+        const r = (radius * level) / levels;
+        const pts = [];
+        for (let i = 0; i < axisCount; i += 1) {
+          const angle = -Math.PI / 2 + i * ((Math.PI * 2) / axisCount);
+          pts.push(`${(cx + r * Math.cos(angle)).toFixed(2)},${(cy + r * Math.sin(angle)).toFixed(2)}`);
+        }
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", pts.join(" "));
+        poly.setAttribute("fill", "none");
+        poly.setAttribute("stroke", "rgba(142,168,209,0.25)");
+        grid.appendChild(poly);
+      }
+
+      for (let i = 0; i < axisCount; i += 1) {
+        const angle = -Math.PI / 2 + i * ((Math.PI * 2) / axisCount);
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", cx);
+        line.setAttribute("y1", cy);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "rgba(142,168,209,0.22)");
+        axes.appendChild(line);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (cx + (radius + 22) * Math.cos(angle)).toFixed(2));
+        label.setAttribute("y", (cy + (radius + 22) * Math.sin(angle)).toFixed(2));
+        label.setAttribute("fill", "#9db7de");
+        label.setAttribute("font-size", "12");
+        label.setAttribute("font-weight", "600");
+        label.setAttribute("text-anchor", "middle");
+        label.textContent = names[i];
+        labels.appendChild(label);
+      }
+    }
+
+    function updateRadar(profile) {
+      const cx = 260;
+      const cy = 210;
+      const radius = 150;
+      const values = [
+        categoryAverage(profile, "Ritmo"),
+        categoryAverage(profile, "Tiro"),
+        categoryAverage(profile, "Pases"),
+        categoryAverage(profile, "Regate"),
+        categoryAverage(profile, "Defensa"),
+        categoryAverage(profile, "Físico")
+      ];
+
+      const pts = values.map((v, i) => {
+        const ratio = Math.max(0, Math.min(1, v / 100));
+        const angle = -Math.PI / 2 + i * ((Math.PI * 2) / values.length);
+        const x = cx + radius * ratio * Math.cos(angle);
+        const y = cy + radius * ratio * Math.sin(angle);
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      });
+
+      document.getElementById("radarShape").setAttribute("points", pts.join(" "));
+    }
+
+    function populateAttributeSelect(profile) {
+      const select = document.getElementById("attributeSelect");
+      const current = select.value;
+      select.innerHTML = "";
+
+      flattenStats(profile.Stats).forEach(({ attr }) => {
+        const op = document.createElement("option");
+        op.value = attr;
+        op.textContent = attr;
+        select.appendChild(op);
+      });
+
+      if (current) select.value = current;
+    }
+
+    function updateUI(profile, statusMessage) {
+      const all = flattenStats(profile.Stats);
+      const avg = all.reduce((acc, s) => acc + s.value, 0) / all.length;
+      document.getElementById("ovrValue").textContent = String(Math.round(avg));
+      document.getElementById("playerName").textContent = profile.Bio.Nombre;
+      document.getElementById("playerTeam").textContent = profile.Bio.EquipoLocalChile;
+      document.getElementById("tierValue").textContent = profile.PlayerTier;
+      document.getElementById("fatigueValue").textContent = `${profile.FatigueLevel}%`;
+      document.getElementById("userModeSelect").value = profile.userMode;
+      if (statusMessage) document.getElementById("sessionStatus").textContent = statusMessage;
+      updateRadar(profile);
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    let appState = loadPlayerData();
+    let selectedType = "Entrenamiento";
+    let selectedFormat = "Fútbol 5";
+    let activeSession = null;
+
+    createRadarBase();
+    populateAttributeSelect(appState);
+    updateUI(appState, "Listo para registrar una sesión.");
+
+    const typeTrainingBtn = document.getElementById("typeTrainingBtn");
+    const typeMatchBtn = document.getElementById("typeMatchBtn");
+    const format5Btn = document.getElementById("format5Btn");
+    const format7Btn = document.getElementById("format7Btn");
+    const format11Btn = document.getElementById("format11Btn");
+    const registerSessionBtn = document.getElementById("registerSessionBtn");
+    const resetDataBtn = document.getElementById("resetDataBtn");
+    const userModeSelect = document.getElementById("userModeSelect");
+    const videoInput = document.getElementById("videoInput");
+    const attributeSelect = document.getElementById("attributeSelect");
+
+    function setActive(buttons, activeBtn) {
+      buttons.forEach((b) => b.classList.remove("active"));
+      activeBtn.classList.add("active");
+    }
+
+    typeTrainingBtn.addEventListener("click", () => {
+      selectedType = "Entrenamiento";
+      setActive([typeTrainingBtn, typeMatchBtn], typeTrainingBtn);
+    });
+
+    typeMatchBtn.addEventListener("click", () => {
+      selectedType = "Partido";
+      setActive([typeTrainingBtn, typeMatchBtn], typeMatchBtn);
+    });
+
+    format5Btn.addEventListener("click", () => {
+      selectedFormat = "Fútbol 5";
+      setActive([format5Btn, format7Btn, format11Btn], format5Btn);
+    });
+
+    format7Btn.addEventListener("click", () => {
+      selectedFormat = "Fútbol 7";
+      setActive([format5Btn, format7Btn, format11Btn], format7Btn);
+    });
+
+    format11Btn.addEventListener("click", () => {
+      selectedFormat = "Fútbol 11";
+      setActive([format5Btn, format7Btn, format11Btn], format11Btn);
+    });
+
+    userModeSelect.addEventListener("change", (e) => {
+      appState.userMode = e.target.value;
+      savePlayerData(appState);
+      updateUI(appState, `Modo actualizado a "${appState.userMode}".`);
+    });
+
+    registerSessionBtn.addEventListener("click", () => {
+      const date = document.getElementById("sessionDate").value;
+      const hour = document.getElementById("sessionTime").value;
+      const duration = document.getElementById("sessionDuration").value;
+
+      activeSession = registerSession(selectedType, selectedFormat, { date, hour, duration });
+      const modeNote = activeSession.validationStatus === "pending"
+        ? "Sesión registrada. Requiere validación (AcademIA)."
+        : "Sesión registrada por el usuario (modo solo).";
+      updateUI(appState, modeNote);
+    });
+
+    resetDataBtn.addEventListener("click", () => {
+      resetPlayerData();
+      appState = createDefaultProfile();
+      activeSession = null;
+      savePlayerData(appState);
+      populateAttributeSelect(appState);
+      updateUI(appState, "Datos reiniciados.");
+    });
+
+    videoInput.addEventListener("change", async (e) => {
+      if (!e.target.files || !e.target.files.length) return;
+      if (!activeSession) {
+        updateUI(appState, "Primero registra una sesión antes de subir video.");
+        e.target.value = "";
+        return;
+      }
+
+      if (appState.userMode === "academia" && activeSession.validationStatus === "pending") {
+        updateUI(appState, "Validando sesión con Academia...");
+        await wait(900);
+        activeSession.validationStatus = "validated";
+      }
+
+      updateUI(appState, "Evaluando técnica con IA...");
+      await wait(3000);
+
+      const result = processTrainingUpdate(
+        appState,
+        {
+          attribute: attributeSelect.value,
+          delta: Number((0.1 + Math.random() * 0.2).toFixed(2))
+        },
+        activeSession
+      );
+
+      appState = result.updatedProfile;
+      updateUI(appState, result.message);
+      e.target.value = "";
+    });
+  </script>
+</body>
+</html>

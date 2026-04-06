@@ -1,0 +1,441 @@
+:root {
+  --bg: #050a15;
+  --bg-deep: #030a1d;
+  --panel: #121f39;
+  --panel-soft: #162543;
+  --stroke: #1c345e;
+  --text: #dde8ff;
+  --muted: #8394bc;
+  --cyan: #42c8ff;
+  --green: #6bffb0;
+  --red: #ff747f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: "Segoe UI", "Roboto", sans-serif;
+  background:
+    radial-gradient(1400px 800px at 55% 110%, #0b1d3a 0%, rgba(11, 29, 58, 0) 60%),
+    radial-gradient(900px 420px at 100% -10%, #0d2240 0%, rgba(13, 34, 64, 0) 70%),
+    var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 86px 1fr;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, #030915 0%, #020713 100%);
+  border-right: 1px solid #0f2040;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 12px;
+}
+
+.nav-icon {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #1f3b67;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #102141, #0a1832);
+  cursor: pointer;
+  position: relative;
+}
+
+.nav-icon::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 4px;
+  background: #3dc6ff;
+  opacity: 0.2;
+}
+
+.nav-icon.active {
+  border-color: #41d2ff;
+  box-shadow: 0 0 16px rgba(66, 200, 255, 0.28);
+}
+
+.nav-icon.active::before {
+  content: "";
+  position: absolute;
+  right: -13px;
+  top: 8px;
+  width: 2px;
+  height: 24px;
+  background: var(--cyan);
+}
+
+.nav-icon.bottom {
+  margin-top: auto;
+}
+
+.workspace {
+  display: grid;
+  grid-template-rows: 72px 1fr;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  border-bottom: 1px solid #0f2142;
+  background: rgba(2, 9, 24, 0.55);
+}
+
+.tabs {
+  display: flex;
+  gap: 30px;
+}
+
+.tab {
+  text-decoration: none;
+  color: #8ca1cc;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.88rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.system-chip {
+  background: rgba(24, 40, 70, 0.7);
+  border: 1px solid #203a64;
+  border-radius: 8px;
+  color: #d6e3ff;
+  padding: 9px 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.dashboard-grid {
+  padding: 34px;
+  display: grid;
+  grid-template-columns: 380px minmax(540px, 1fr) 340px;
+  grid-template-rows: 1fr auto;
+  gap: 24px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(20, 33, 61, 0.92), rgba(14, 25, 47, 0.97));
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.card-header h2,
+.small-card h4 {
+  margin: 0;
+  font-size: 1.06rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e2ebff;
+}
+
+.player-card {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.player-photo {
+  border-radius: 12px;
+  border: 1px solid #27416b;
+  background:
+    linear-gradient(180deg, rgba(6, 12, 27, 0.05), rgba(5, 10, 21, 0.88)),
+    radial-gradient(580px 380px at 50% 0%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0)),
+    #0b162c;
+  min-height: 620px;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 34%),
+    repeating-linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.03) 0 6px,
+      rgba(255, 255, 255, 0) 6px 16px
+    );
+  pointer-events: none;
+}
+
+.ovr-circle {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  border: 3px solid var(--cyan);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.ovr-circle span {
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.ovr-circle small {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9bc7dd;
+  font-size: 0.66rem;
+}
+
+.player-info {
+  position: absolute;
+  left: 36px;
+  bottom: 40px;
+  z-index: 1;
+}
+
+.player-name {
+  margin: 0;
+  max-width: 230px;
+  font-size: 3.6rem;
+  line-height: 0.92;
+  font-weight: 700;
+  color: #f4f7ff;
+  text-transform: uppercase;
+}
+
+.player-team {
+  margin: 0;
+  margin-bottom: 10px;
+  letter-spacing: 0.1em;
+  font-size: 0.82rem;
+  color: #a9badc;
+  text-transform: uppercase;
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.status-card {
+  background: linear-gradient(170deg, #132442, #0e1b32);
+  border: 1px solid #26456f;
+  border-radius: 10px;
+  padding: 16px 18px;
+  min-height: 96px;
+}
+
+.status-card h4 {
+  margin: 0;
+  color: #8ca2cc;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 0.76rem;
+}
+
+.status-card p {
+  margin: 8px 0 0;
+  font-size: 2.7rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.radar-card {
+  display: grid;
+  align-content: start;
+}
+
+.radar-placeholder {
+  margin: 18px auto 0;
+  width: min(530px, 100%);
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid #203d67;
+  background:
+    radial-gradient(circle at center, rgba(66, 200, 255, 0.14), rgba(66, 200, 255, 0) 62%),
+    repeating-radial-gradient(
+      circle at center,
+      transparent 0 46px,
+      rgba(88, 115, 159, 0.22) 46px 48px
+    ),
+    #0f1c35;
+}
+
+.split-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.metric-item {
+  background: rgba(14, 28, 53, 0.74);
+  border: 1px solid #1f3f69;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.metric-item span {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.77rem;
+  color: var(--muted);
+}
+
+.metric-item strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--cyan);
+}
+
+.right-stack {
+  display: grid;
+  grid-template-rows: 0.52fr 0.48fr;
+  gap: 18px;
+}
+
+.bio-row {
+  margin-top: 14px;
+}
+
+.bio-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.bio-head span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a2b2d4;
+  font-size: 0.8rem;
+}
+
+.bio-head strong {
+  font-size: 2.75rem;
+  line-height: 1;
+}
+
+.progress-track {
+  height: 8px;
+  background: #1a2b4a;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+.progress-fill.cyan {
+  background: linear-gradient(90deg, #72ffcf, #4fd6ff);
+  box-shadow: 0 0 12px rgba(79, 214, 255, 0.45);
+}
+
+.recovery-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.recovery-item {
+  margin-top: 4px;
+  padding: 14px 14px 14px 16px;
+  border-left: 3px solid var(--green);
+  background: rgba(15, 30, 55, 0.6);
+  border-radius: 8px;
+}
+
+.recovery-item span {
+  display: block;
+  color: #93a7ce;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.73rem;
+}
+
+.recovery-item strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.recovery-item.danger {
+  border-left-color: var(--red);
+}
+
+.footer-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.small-card {
+  background: linear-gradient(165deg, #142544, #101d35);
+  border: 1px solid #25456f;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.small-card p {
+  margin: 10px 0 0;
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.small-card p span {
+  font-size: 0.48em;
+  color: #9bb0d9;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+@media (max-width: 1450px) {
+  .dashboard-grid {
+    grid-template-columns: 330px 1fr 320px;
+    padding: 24px;
+  }
+
+  .player-name,
+  .small-card p,
+  .bio-head strong,
+  .recovery-item strong {
+    font-size: clamp(2rem, 2.6vw, 2.9rem);
+  }
+}

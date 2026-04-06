@@ -1,0 +1,5 @@
+/* Aggregated stylesheet for backwards compatibility */
+@import url("src/styles/base.css");
+@import url("src/styles/auth.css");
+@import url("src/styles/player.css");
+@import url("src/styles/academy.css");

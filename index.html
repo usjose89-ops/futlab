@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FutLab — Rendimiento Elite</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@0.244.0/dist/umd/lucide.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- ═══ MODAL EDITAR ATLETA (MANAGER) ═══ -->
+<div id="edit-player-modal" class="login-modal-overlay">
+  <div class="login-modal-card">
+    <button class="login-modal-close" data-action="close-edit-modal">✕</button>
+    <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--team-primary);">EDITAR FICHA TÉCNICA</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div>
+        <label class="ob-label">Nombre Completo</label>
+        <input type="text" id="edit-p-name" class="ob-input">
+      </div>
+      <div>
+        <label class="ob-label">Posición</label>
+        <select id="edit-p-pos" class="ob-input">
+          <option value="DC">DC (Delantero)</option>
+          <option value="MC">MC (Medio)</option>
+          <option value="ED">ED (Extremo)</option>
+          <option value="LI">LI (Lateral)</option>
+          <option value="DFC">DFC (Defensa)</option>
+          <option value="PO">PO (Portero)</option>
+        </select>
+      </div>
+      <div>
+        <label class="ob-label">Peso (kg)</label>
+        <input type="number" id="edit-p-weight" class="ob-input">
+      </div>
+      <div>
+        <label class="ob-label">Estatura (cm)</label>
+        <input type="number" id="edit-p-height" class="ob-input">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+       <label class="ob-label">Estadísticas (0-99)</label>
+       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">RIT</label><input type="number" id="edit-s-ritmo" class="ob-input"></div>
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">TIR</label><input type="number" id="edit-s-tiro" class="ob-input"></div>
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">PAS</label><input type="number" id="edit-s-pases" class="ob-input"></div>
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">REG</label><input type="number" id="edit-s-regate" class="ob-input"></div>
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">DEF</label><input type="number" id="edit-s-defensa" class="ob-input"></div>
+         <div><label style="font-size:0.6rem; color:var(--text-muted);">FIS</label><input type="number" id="edit-s-fisico" class="ob-input"></div>
+       </div>
+    </div>
+
+    <button data-action="save-player-changes" class="btn btn-primary" style="width:100%; justify-content:center;">GUARDAR CAMBIOS →</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL DE LOGIN ═══ -->
+<div id="login-modal-overlay" class="login-modal-overlay">
+  <div class="login-modal-card">
+    <button class="login-modal-close" data-action="close-login-modal">✕</button>
+    <div class="login-modal-logo">
+      <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+        <path d="M24 2L44 13.5V34.5L24 46L4 34.5V13.5L24 2Z" stroke="#22c55e" stroke-width="2.5" fill="none"/>
+        <circle cx="24" cy="16" r="5" stroke="#22c55e" stroke-width="2" fill="none"/>
+        <path d="M10 36 Q24 20 38 36" stroke="#22c55e" stroke-width="2" fill="none"/>
+        <rect x="16" y="28" width="3" height="8" fill="#22c55e" rx="1"/>
+        <rect x="21" y="24" width="3" height="12" fill="#22c55e" rx="1"/>
+        <rect x="26" y="20" width="3" height="16" fill="#22c55e" rx="1"/>
+      </svg>
+      <span>FutLab</span>
+    </div>
+    <h3 class="login-modal-title">Iniciar Sesión</h3>
+    <p class="login-modal-subtitle">Ingresa a tu portal de rendimiento</p>
+    <div class="ob-input-group">
+      <label class="ob-label">CORREO ELECTRÓNICO</label>
+      <input type="email" id="login-email" class="ob-input" placeholder="ej: dt@futlab.cl">
+    </div>
+    <div class="ob-input-group" style="margin-top:12px;">
+      <label class="ob-label">CONTRASEÑA</label>
+      <input type="password" id="login-pass" class="ob-input" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100%; margin-top:20px; font-size:0.9rem;" data-action="attempt-login">INGRESAR AL SISTEMA →</button>
+    <div id="login-error" style="color:#ef4444; font-size:0.8rem; margin-top:12px; text-align:center; display:none; font-weight:700;">Credenciales incorrectas. Intenta de nuevo.</div>
+    <div class="login-modal-demo">
+      <strong>Acceso Demo:</strong>
+      <div class="login-demo-chips">
+        <button class="demo-chip" data-action="fill-demo" data-type="manager">👔 Manager</button>
+        <button class="demo-chip" data-action="fill-demo" data-type="sub30">⚽ Jugador Sub30</button>
+        <button class="demo-chip" data-action="fill-demo" data-type="sub14">🌟 Jugador Sub14</button>
+      </div>
+      <span class="login-demo-pass">Contraseña: <strong>Chile2026</strong></span>
+      <div style="margin-top:15px; text-align:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+        <span style="font-size:0.75rem; color:var(--text-muted);">¿No tienes cuenta?</span>
+        <button data-action="register-athlete" style="font-size:0.75rem; color:#22c55e; font-weight:700; margin-left:5px; text-decoration:underline;">Registrar nuevo atleta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA DE INICIO (LANDING) ═══ -->
+<div id="screen-login" class="screen active">
+
+  <div class="landing-bg">
+    <div class="landing-bg-overlay"></div>
+  </div>
+
+  <header class="landing-topbar">
+    <div class="landing-logo">
+      <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="landing-logo-image">
+    </div>
+    <nav class="landing-nav">
+      <a class="landing-nav-link" href="#">Soporte</a>
+      <span class="landing-nav-divider">ES/EN</span>
+      <button class="landing-btn-signin" data-action="open-login-modal">Iniciar sesión</button>
+    </nav>
+  </header>
+
+  <main class="landing-hero">
+    <div class="landing-hero-content">
+      <h1 class="landing-hero-title">Desarrollo futbolístico con <span class="landing-hero-accent">seguimiento inteligente.</span></h1>
+      <p class="landing-hero-desc">Plataforma de desarrollo y rendimiento para futbolistas de todos los niveles.</p>
+    </div>
+    <div class="landing-select-label">SELECCIONA TU PERFIL DE INGRESO</div>
+
+    <div class="landing-cards">
+      <article class="landing-card" data-action="demo-login" data-mode="manager">
+        <div class="landing-card-img" style="background-image: url('assets/images/landing/manager.png');">
+          <div class="landing-card-img-overlay"></div>
+        </div>
+        <div class="landing-card-body">
+          <div class="landing-card-tag">
+            <i data-lucide="shield-check" style="width:18px;"></i>
+            <span>Modo Manager</span>
+          </div>
+          <p class="landing-card-desc">Control del plantel y seguimiento del rendimiento.</p>
+          <button class="landing-card-btn">ACCEDER AL PANEL <span aria-hidden="true">→</span></button>
+        </div>
+      </article>
+
+      <article class="landing-card" data-action="demo-login" data-mode="jugador">
+        <div class="landing-card-img" style="background-image: url('assets/images/landing/jugador_home.jpg');">
+          <div class="landing-card-img-overlay"></div>
+        </div>
+        <div class="landing-card-body">
+          <div class="landing-card-tag">
+            <i data-lucide="target" style="width:18px;"></i>
+            <span>Modo Jugador</span>
+          </div>
+          <p class="landing-card-desc">Acceso a perfil, avances y evolución deportiva.</p>
+          <button class="landing-card-btn">VER MI PROGRESO <span aria-hidden="true">→</span></button>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- TICKER -->
+  <div class="landing-ticker">
+    <div class="landing-ticker-dot"></div>
+    <div class="landing-ticker-track">
+      <span>ENTRENA CON DATOS · EVOLUCIONA CON CRITERIO · FUTLAB 2026 · ACADEMIA ÉLITE · ANÁLISIS EN TIEMPO REAL · RENDIMIENTO INTELIGENTE · ENTRENA CON DATOS · EVOLUCIONA CON CRITERIO · FUTLAB 2026 ·</span>
+    </div>
+  </div>
+
+  <footer class="landing-footer">
+    <div class="landing-footer-logo">FutLab</div>
+    <div class="landing-footer-links">
+      <a href="#">Términos de Servicio</a>
+      <a href="#">Política de Privacidad</a>
+      <a href="#">Cookies</a>
+    </div>
+    <span class="landing-footer-copy">© 2025 FUTLAB. TODOS LOS DERECHOS RESERVADOS.</span>
+  </footer>
+</div>
+
+<div id="onboarding-modal" class="onboarding-overlay">
+  <div class="onboarding-card">
+    <div id="ob-step-1" class="ob-step active">
+      <div class="ob-title">Biometría Base</div>
+      <div class="ob-subtitle">Configura tus parámetros físicos iniciales.</div>
+      <div class="ob-input-group">
+        <label class="ob-label">Nombre completo</label>
+        <input type="text" id="ob-name" class="ob-input" placeholder="Ej: Kevin De Bruyne">
+      </div>
+      <div class="grid-2">
+        <div class="ob-input-group">
+          <label class="ob-label">Edad (Años)</label>
+          <input type="number" id="ob-age" class="ob-input" placeholder="Ej: 31">
+        </div>
+        <div class="ob-input-group">
+          <label class="ob-label">Peso (Kg)</label>
+          <input type="number" id="ob-weight" class="ob-input" placeholder="Ej: 75">
+        </div>
+      </div>
+      <div class="ob-input-group">
+        <label class="ob-label">Estatura (Cm)</label>
+        <input type="number" id="ob-height" class="ob-input" placeholder="Ej: 181">
+      </div>
+      <div class="ob-footer">
+        <button class="btn btn-secondary" data-action="close-onboarding">Cancelar</button>
+        <button class="btn btn-primary" data-action="next-ob-step" data-step="2">Siguiente →</button>
+      </div>
+    </div>
+    
+    <div id="ob-step-2" class="ob-step">
+      <div class="ob-title">Perfil Táctico</div>
+      <div class="ob-subtitle">Asignación de posición primaria.</div>
+      <div class="ob-input-group">
+        <label class="ob-label">Posición Principal</label>
+        <select id="ob-pos" class="ob-input">
+          <option value="DC">Delantero (DC / Extremo)</option>
+          <option value="MC">Mediocampista (MC / Volante)</option>
+          <option value="MCD">Contención (MCD)</option>
+          <option value="LD">Lateral (Der / Izq)</option>
+          <option value="DF">Defensa Central</option>
+          <option value="PO">Portero (PO)</option>
+        </select>
+      </div>
+      <div class="ob-footer">
+        <button class="btn btn-secondary" data-action="next-ob-step" data-step="1">← Atrás</button>
+        <button class="btn btn-primary" data-action="next-ob-step" data-step="3">Siguiente →</button>
+      </div>
+    </div>
+
+    <div id="ob-step-3" class="ob-step">
+      <div class="ob-title">Evaluación Cognitiva 1</div>
+      <div class="ob-options">
+        <div class="ob-option" data-action="select-answer" data-q="q1" data-a="A">A) Ataque vertical y regate en velocidad.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q1" data-a="B">B) Visión periférica y pase largo filtrado.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q1" data-a="C">C) Posesión, pase corto y control de ritmo.</div>
+      </div>
+    </div>
+    <div id="ob-step-4" class="ob-step">
+      <div class="ob-title">Evaluación Cognitiva 2</div>
+      <div class="ob-options">
+        <div class="ob-option" data-action="select-answer" data-q="q2" data-a="A">A) Disputa física y choque directo.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q2" data-a="B">B) Cobertura de líneas y posicionamiento.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q2" data-a="C">C) Anticipación rápida y agilidad.</div>
+      </div>
+    </div>
+    <div id="ob-step-5" class="ob-step">
+      <div class="ob-title">Evaluación Cognitiva 3</div>
+      <div class="ob-options">
+        <div class="ob-option" data-action="select-answer" data-q="q3" data-a="A">A) Remate de potencia pura.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q3" data-a="B">B) Definición técnica y colocada.</div>
+        <div class="ob-option" data-action="select-answer" data-q="q3" data-a="C">C) Asistencia al compañero mejor ubicado.</div>
+      </div>
+    </div>
+
+    <div id="ob-step-6" class="ob-step">
+      <div class="ob-title">Identidad del HUD</div>
+      <div class="ob-subtitle">Selecciona tus franquicias para calibrar el color del sistema.</div>
+      <div class="ob-input-group">
+        <label class="ob-label">Equipo en Chile</label>
+        <select id="ob-team-local" class="ob-input">
+          <option value="">Ninguno</option>
+          <option value="colo">Colo-Colo</option>
+          <option value="udi">Universidad de Chile</option>
+          <option value="uc">Universidad Católica</option>
+          <option value="cobreloa">Cobreloa</option>
+          <option value="everton">Everton</option>
+          <option value="wanderers">Santiago Wanderers</option>
+          <option value="ohiggins">O'Higgins</option>
+          <option value="audax">Audax Italiano</option>
+        </select>
+      </div>
+      <div class="ob-input-group">
+        <label class="ob-label">Equipo en el Mundo</label>
+        <select id="ob-team-world" class="ob-input">
+          <option value="">Ninguno</option>
+          <optgroup label="España">
+            <option value="rmadrid">Real Madrid</option>
+            <option value="barca">FC Barcelona</option>
+            <option value="atleti">Atlético de Madrid</option>
+          </optgroup>
+          <optgroup label="Inglaterra">
+            <option value="arsenal">Arsenal</option>
+            <option value="chelsea">Chelsea</option>
+            <option value="lfc">Liverpool FC</option>
+            <option value="city">Manchester City</option>
+            <option value="manu">Manchester United</option>
+          </optgroup>
+          <optgroup label="Italia">
+            <option value="inter">Inter de Milán</option>
+            <option value="milan">AC Milan</option>
+            <option value="juve">Juventus</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="ob-input-group">
+        <label class="ob-label">Color del Sistema</label>
+        <select id="ob-theme-pref" class="ob-input">
+          <option value="futlab">Azul FutLab (Por Defecto)</option>
+          <option value="local">Usar color del Equipo Local</option>
+          <option value="world">Usar color del Equipo del Mundo</option>
+        </select>
+      </div>
+      <div class="ob-footer">
+        <button class="btn btn-secondary" data-action="next-ob-step" data-step="5">← Atrás</button>
+        <button class="btn btn-primary" data-action="finish-onboarding">Inicializar HUD</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+  ==========================================================================
+  PANTALLA PRINCIPAL (HUD / INTERFAZ POST-LOGIN)
+  Contenedor: #screen-app
+  Aquí viven todos los Sidebars, Topnavs y Páginas de contenido.
+  ==========================================================================
+-->
+<div id="screen-app" class="screen">
+  <div class="hud-layout">
+    
+    <!-- ═══ SIDEBAR: MODO MANAGER (DT) ═══ -->
+    <nav id="sidebar-dt" class="hud-sidebar" style="display:none;">
+      <div class="hud-logo">
+        <div style="display:flex; align-items:center; gap:12px;">
+           <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+             <path d="M24 2L44 13.5V34.5L24 46L4 34.5V13.5L24 2Z" stroke="#00f5d4" stroke-width="2.5" fill="none"/>
+             <rect x="16" y="28" width="3" height="8" fill="#00f5d4" rx="1"/>
+           </svg>
+           <div style="line-height:1.1;">
+             <span style="font-size:1.1rem; font-weight:900; letter-spacing:1px; color:#fff;">FUTLAB</span><br>
+             <span style="font-size:0.55rem; color:#94a3b8; font-weight:600; letter-spacing:0.5px;">PERFORMANCE UNIT</span>
+           </div>
+        </div>
+      </div>
+      
+      <div class="hud-nav-item" data-action="show-page" data-page="dt-dashboard">
+        <i data-lucide="layout-dashboard"></i> DASHBOARD
+      </div>
+      <div class="hud-nav-item active" data-action="show-page" data-page="dt-dashboard">
+        <i data-lucide="users"></i> ACADEMIAS
+      </div>
+      <div class="hud-nav-item" data-action="show-page" data-page="pl-evolution">
+        <i data-lucide="line-chart"></i> CRECIMIENTO
+      </div>
+      <div class="hud-nav-item" data-action="show-page" data-page="dt-validation">
+        <i data-lucide="video"></i> VALIDACIÓN
+      </div>
+      <div class="hud-nav-item" data-action="show-page" data-page="pl-training">
+        <i data-lucide="dumbbell"></i> ENTRENAMIENTO
+      </div>
+      <div class="hud-nav-item" style="opacity: 0.5; cursor: not-allowed;">
+        <i data-lucide="user-cog"></i> GESTIÓN DE JUGADORES
+      </div>
+      <div class="hud-nav-item" style="opacity: 0.5; cursor: not-allowed;">
+        <i data-lucide="clipboard-list"></i> GESTIONAR PARTIDOS
+      </div>
+      <div class="hud-nav-item" style="opacity: 0.5; cursor: not-allowed;">
+        <i data-lucide="calendar"></i> CALENDARIO
+      </div>
+      <div class="hud-nav-item" style="opacity: 0.5; cursor: not-allowed;">
+        <i data-lucide="wallet"></i> FINANZAS
+      </div>
+      
+      <div class="hud-sidebar-bottom" style="margin-top:auto; padding-bottom: 20px;">
+        <button class="btn btn-primary" style="width:100%; background:#00f5d4; color:#000; font-size:0.75rem; border-radius:4px; margin-bottom:12px;" data-action="show-alert" data-message="Nueva Academia">NUEVA ACADEMIA</button>
+        <div class="hud-nav-item" style="padding: 10px 0; color:#64748b;" data-action="show-alert" data-message="Soporte">
+          <i data-lucide="help-circle"></i> SOPORTE
+        </div>
+        <div class="hud-nav-item" style="padding: 10px 0; color:#ef4444;" data-action="logout">
+          <i data-lucide="log-out"></i> SALIR
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══ SIDEBAR: MODO JUGADOR (PLAYER) ═══ -->
+    <nav id="sidebar-player" class="hud-sidebar" style="display:none;">
+      <div class="hud-logo">FUTLAB<span>RENDIMIENTO DE ÉLITE</span></div>
+      
+      <div class="pl-nav-group">
+        <div class="hud-nav-item active" id="nav-pl-profile" data-action="show-page" data-page="pl-profile"><i data-lucide="layout-dashboard" style="width:16px;"></i> Panel de Control</div>
+        <div class="hud-nav-item" id="nav-pl-evolution" data-action="show-page" data-page="pl-evolution"><i data-lucide="flask-conical" style="width:16px;"></i> Laboratorio</div>
+        <div class="hud-nav-item" id="nav-pl-training" data-action="show-page" data-page="pl-training"><i data-lucide="dumbbell" style="width:16px;"></i> Carga de Entrenamiento</div>
+        <div class="hud-nav-item"><i data-lucide="trending-up" style="width:16px;"></i> Mi Evolución</div>
+        <div class="hud-nav-item"><i data-lucide="clock" style="width:16px;"></i> Historial de Partidos</div>
+      </div>
+
+      <div class="hud-sidebar-bottom">
+        <div class="pl-nav-bottom-group">
+          <div class="hud-nav-item" style="opacity:0.6;"><i data-lucide="settings" style="width:16px;"></i> Configuración</div>
+          <div class="hud-nav-item" style="opacity:0.6;"><i data-lucide="help-circle" style="width:16px;"></i> Soporte</div>
+        </div>
+        <button class="btn-upgrade" data-action="show-alert" data-message="Próximamente...">ACTUALIZAR A PLATINUM</button>
+        <div style="text-align:left; padding: 14px 16px 20px;">
+          <span style="font-size: 0.65rem; color: var(--text-muted); cursor:pointer; font-weight: 700; letter-spacing:1px;" data-action="logout"><i data-lucide="log-out" style="width:11px; vertical-align:middle; margin-right:4px;"></i> CERRAR SESIÓN</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="hud-main">
+      <header class="hud-topnav pl-topnav" id="topnav-player" style="display:none;">
+        <!-- Left: title + year -->
+        <div class="pl-topnav-brand">
+          <div class="pl-topnav-title">PORTAL DE<br>RENDIMIENTO</div>
+          <div class="pl-topnav-year"><span style="font-size:0.5rem; display:block; opacity:0.5; letter-spacing:2px;">AÑO</span>2026</div>
+        </div>
+        <!-- Tabs -->
+        <nav class="pl-topnav-tabs">
+          <div class="pl-tab active">MÉTRICAS DE TEMPORADA</div>
+          <div class="pl-tab">GENERAL</div>
+          <div class="pl-search"><i data-lucide="search" style="width:13px; color:var(--text-muted);"></i><input type="text" placeholder="Buscar métricas..." style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; outline:none; width:130px;"></div>
+        </nav>
+        <!-- Right: icons + user -->
+        <div class="pl-topnav-right">
+          <i data-lucide="bell" style="width:16px; color:var(--text-muted); cursor:pointer;"></i>
+          <i data-lucide="history" style="width:16px; color:var(--text-muted); cursor:pointer;"></i>
+          <div class="pl-user-chip">
+            <div>
+              <div style="font-size:0.7rem; font-weight:900; color:#fff; line-height:1;" id="topnav-player-name">NICOLÁS LEIVA</div>
+              <div style="font-size:0.55rem; color:var(--text-muted); letter-spacing:1px; margin-top:2px;">JUGADOR LIBRE</div>
+            </div>
+            <div id="mini-avatar-container-pl" class="pl-avatar-circle">
+              <i data-lucide="user" style="width:14px; color:#fff;"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <header class="hud-topnav" id="topnav-dt" style="display:none; justify-content: space-between; padding: 0 30px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:1px;">CENTRO TÁCTICO</span>
+          <span style="color:#94a3b8; font-size:0.8rem; margin: 0 10px; opacity:0.5;">|</span>
+          <span style="font-size:0.75rem; font-weight:700; color:#94a3b8; letter-spacing:1px;">INTELIGENCIA DEPORTIVA</span>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:24px; flex:1; justify-content:center; max-width:600px;">
+          <div style="position:relative; width:100%;">
+            <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; color:#64748b;"></i>
+            <input type="text" placeholder="Buscar jugador..." style="width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:10px 10px 10px 40px; font-size:0.85rem; color:#fff; outline:none;">
+          </div>
+        </div>
+
+        <div class="hud-user-badge">
+          <i data-lucide="bell" style="color:#94a3b8; cursor:pointer; width:20px;"></i>
+          <i data-lucide="settings" style="color:#94a3b8; cursor:pointer; width:20px; margin: 0 15px;"></i>
+          <div class="hud-avatar-mini" style="width:36px; height:36px; border-radius:50%; border:2px solid #ef4444; overflow:hidden;">
+            <img src="assets/images/shared/jugador.jpg" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+        </div>
+      </header>
+
+      <div id="dt-dashboard" class="page" style="padding: 40px; overflow-y:auto; flex:1;">
+        <!-- Cabecera Gestión de Planteles -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 30px;">
+          <div>
+            <h1 style="font-size: 2.4rem; font-weight: 800; color: #fff; letter-spacing: -1px; text-transform: uppercase;">GESTIÓN DE PLANTELES</h1>
+            <p style="font-size: 0.85rem; color: #64748b; font-weight: 700; letter-spacing: 1px; margin-top: 5px;">CONTROL TÁCTICO DE UNIDADES REGIONALES</p>
+          </div>
+          
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.2); padding: 4px; border-radius:12px;">
+               <div style="width:32px; height:32px; border-radius:50%; background:#22c55e; border:2px solid #00f5d4; display:flex; align-items:center; justify-content:center; color:#000; font-weight:900; font-size:0.8rem;">GT</div>
+               <div style="width:32px; height:32px; border-radius:50%; background:#000; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.8rem;"><i data-lucide="user" style="width:14px;"></i></div>
+               <div style="background:rgba(255,255,255,0.05); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.7rem; font-weight:800;">+4</div>
+            </div>
+            <button class="filter-btn">
+              <i data-lucide="filter" style="width:14px;"></i> FILTRAR
+            </button>
+          </div>
+        </div>
+
+        <!-- Columnas Regionales (Renderizadas por JS) -->
+        <div class="kanban-board-regional" id="manager-regional-board">
+           <!-- Renderizado dinámico de Las Condes, Ñuñoa, Providencia, Vitacura -->
+        </div>
+
+        <!-- Footer Dashboard KPI Panel -->
+        <div class="dashboard-footer-kpis">
+          <div class="status-panel">
+            <div class="status-metric">
+              <span class="sm-label">ESTADO DEL SISTEMA</span>
+              <div class="sm-status">
+                <div class="sm-status-dot"></div> Sincronización GPS Live
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="sm-label">Última validación</span>
+              <span style="font-size:0.8rem; color:#fff; font-weight:700;">Hace 4 mins</span>
+            </div>
+            <div class="status-metric">
+              <span class="sm-label">TOTAL JUGADORES</span>
+              <div class="sm-val-group">
+                <span class="sm-val">100</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="sm-label">OVR PROMEDIO</span>
+              <div class="sm-val-group">
+                <span class="sm-val" style="color:#22c55e;">84.2</span>
+              </div>
+            </div>
+          </div>
+          <div class="alert-panel">
+            <div class="alert-title">
+              <i data-lucide="trending-up" style="width:14px;"></i> ALERTA DE CRECIMIENTO
+            </div>
+            <p class="alert-text">
+              <b>3 Jugadores</b> en <b>Las Condes</b> han superado el umbral de rendimiento esperado esta semana.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="dt-academy" class="page" style="padding: 40px; overflow-y:auto; flex:1;">
+        <div class="academy-command-header">
+          <div>
+            <h1>ACADEMIA</h1>
+            <p>VISTA DETALLADA DE OPERACIÓN Y CRECIMIENTO</p>
+          </div>
+          <button class="filter-btn" data-action="return-dashboard">
+            <i data-lucide="arrow-left" style="width:14px;"></i> VOLVER A ACADEMIAS
+          </button>
+        </div>
+
+        <section class="academy-hero-panel">
+          <div class="academy-hero-cover">
+            <div class="academy-hero-shade"></div>
+          </div>
+          <div class="academy-hero-body">
+            <div class="academy-hero-title-row">
+              <h2 id="manager-academy-name">Academia Elite Santiago</h2>
+              <button class="academy-select-btn" data-action="cycle-manager-academy">
+                <i data-lucide="building-2" style="width:14px;"></i>
+                <span id="manager-academy-selector-label">Selector de Academia</span>
+              </button>
+            </div>
+            <div class="academy-hero-meta">
+              <span><i data-lucide="map-pin" style="width:12px;"></i> <span id="manager-academy-location">Santiago, CL</span></span>
+              <span>•</span>
+              <span id="manager-academy-id">ID: FTL-2940-STGO</span>
+            </div>
+            <div class="academy-hero-kpis">
+              <div class="academy-kpi-box">
+                <span class="academy-kpi-label">Jugadores</span>
+                <span class="academy-kpi-val" id="manager-academy-count">0</span>
+              </div>
+              <div class="academy-kpi-box">
+                <span class="academy-kpi-label">OVR Prom.</span>
+                <span class="academy-kpi-val academy-kpi-val-teal" id="manager-academy-ovr">0</span>
+              </div>
+            </div>
+          </div>
+          <button class="academy-edit-image-btn">
+            <i data-lucide="pencil" style="width:13px;"></i>
+            EDITAR IMAGEN
+          </button>
+        </section>
+
+        <section class="academy-main-grid">
+          <div class="academy-video-panel">
+            <div class="academy-panel-head">
+              <div class="academy-panel-title-group">
+                <h3>Cola de Validación de Video</h3>
+                <span class="academy-pill" id="academy-pending-pill">4 Pendientes</span>
+              </div>
+              <button class="academy-link-btn">VER TODO</button>
+            </div>
+
+            <div class="academy-video-cards">
+              <article class="academy-video-card">
+                <div class="academy-video-thumb" style="background-image:url('assets/images/landing/jugador_home.jpg');">
+                  <div class="academy-video-play"><i data-lucide="play" style="width:18px;"></i></div>
+                  <span class="academy-video-time">00:45s</span>
+                </div>
+                <div class="academy-video-body">
+                  <p class="academy-video-cat">MECÁNICA DE GOLPEO</p>
+                  <h4>Tiro Libre - Juan Pérez</h4>
+                  <button class="academy-mini-btn">VALIDAR</button>
+                </div>
+              </article>
+
+              <article class="academy-video-card">
+                <div class="academy-video-thumb" style="background-image:url('assets/images/landing/manager.png');">
+                  <div class="academy-video-play"><i data-lucide="play" style="width:18px;"></i></div>
+                  <span class="academy-video-time">01:20s</span>
+                </div>
+                <div class="academy-video-body">
+                  <p class="academy-video-cat">AGILIDAD DE PIES</p>
+                  <h4>Slalom Control - Lucas Silva</h4>
+                  <button class="academy-mini-btn">VALIDAR</button>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <aside class="academy-side-stack">
+            <div class="academy-action-grid">
+              <button class="academy-action-card">
+                <i data-lucide="dumbbell" style="width:20px;"></i>
+                <span>Nueva sesión<br>de entrenamiento</span>
+              </button>
+              <button class="academy-action-card">
+                <i data-lucide="video" style="width:20px;"></i>
+                <span>Subir video<br>analítico</span>
+              </button>
+            </div>
+
+            <div class="academy-growth-panel">
+              <div class="academy-growth-head">
+                <h3>MÁXIMO CRECIMIENTO</h3>
+                <i data-lucide="trending-up" style="width:16px;"></i>
+              </div>
+              <div id="academy-growth-list"></div>
+              <button class="academy-growth-btn">VER ACADEMIA COMPLETA</button>
+            </div>
+
+            <div class="academy-efficiency-card">
+              <div class="academy-eff-label">EFICIENCIA DE ENTRENAMIENTO</div>
+              <div class="academy-eff-row">
+                <span class="academy-eff-main">94.2%</span>
+                <span class="academy-eff-delta">+1.4% esta semana</span>
+              </div>
+              <div class="academy-eff-bar"><div class="academy-eff-fill"></div></div>
+            </div>
+          </aside>
+        </section>
+      </div>
+
+      <div id="dt-players" class="page hud-content">
+        <div class="page-title">Gestión de Plantilla</div>
+        <div class="card">
+          <div class="card-title">Lista de Jugadores</div>
+          <table class="data-table">
+            <thead><tr><th>Jugador</th><th>Pos.</th><th>OVR</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>Matías González</td><td><span class="tag tag-blue">LD</span></td><td>78</td><td><span class="tag tag-green">Óptimo</span></td></tr>
+              <tr><td>Carlos Muñoz</td><td><span class="tag tag-blue">MC</span></td><td>76</td><td><span class="tag tag-green">Óptimo</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="dt-validation" class="page hud-content">
+        <div class="page-title">Módulo de Validación de Video</div>
+        <div class="card">
+          <div style="text-align:center; padding: 50px;">
+            <i data-lucide="video" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
+            <h2 style="color: #fff; margin-bottom: 10px;">Próximamente: Lab Móvil</h2>
+            <p style="color: var(--text-muted);">Estamos integrando Computer Vision para análisis automático de jugadas.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="pl-profile" class="page hud-grid-elite">
+
+        <!-- ═══ COLUMNA 1: PERFIL JUGADOR ═══ -->
+        <div class="prf-col-left">
+
+          <!-- Tarjeta Foto / OVR -->
+          <div class="player-card-elite">
+            <div class="portrait-bg" id="card-portrait" style="background-image:url('assets/images/shared/jugador.jpg');"></div>
+            <div class="card-gradient"></div>
+
+            <!-- Nombre sobre la foto -->
+            <div class="card-top">
+              <div class="player-name-elite" id="hud-name">NICOLÁS<br>LEIVA</div>
+              <div style="font-size:0.6rem; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.45); margin-top:3px; text-transform:uppercase;">JUGADOR LIBRE</div>
+            </div>
+
+            <!-- OVR + detalles abajo -->
+            <div class="card-bottom">
+              <div style="font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.45); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">CALIFICACIÓN GENERAL</div>
+              <div style="display:flex; align-items:flex-end; gap:12px; margin-bottom:14px;">
+                <div class="card-ovr" id="hud-ovr">88</div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:3px; padding-bottom:4px;">
+                  <div class="ovr-badge-icon">✓</div>
+                  <div id="hud-status-label" style="font-size:0.5rem; font-weight:900; color:var(--team-primary); letter-spacing:1px; text-align:center; line-height:1.2;">ESTATUS<br>ÉLITE</div>
+                </div>
+              </div>
+
+              <!-- Pie + Nacimiento -->
+              <div class="prf-detail-grid">
+                <div class="prf-detail-item">
+                  <div class="prf-detail-label">⚡ PIE PREFERIDO</div>
+                  <div class="prf-detail-val" id="hud-foot">DERECHO</div>
+                </div>
+                <div class="prf-detail-item">
+                  <div class="prf-detail-label">NACIMIENTO</div>
+                  <div class="prf-detail-val" id="hud-birthdate">03/04/1988</div>
+                </div>
+              </div>
+              <!-- Habilidades -->
+              <div class="prf-detail-grid" style="margin-top:7px;">
+                <div class="prf-detail-item">
+                  <div class="prf-detail-label">HABILIDADES</div>
+                  <div class="prf-stars" id="hud-stars-strong">★★★★★</div>
+                </div>
+                <div class="prf-detail-item">
+                  <div class="prf-detail-label">PIE DÉBIL</div>
+                  <div class="prf-stars prf-stars-weak" id="hud-stars-weak">★★★★★</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caja de Posición -->
+          <div class="prf-position-box">
+            <div class="prf-section-label">POSICIÓN</div>
+            <div class="prf-pos-row">
+              <span class="status-badge status-primary">ESTATUS ÉLITE</span>
+              <span class="prf-pos-name" id="hud-pos-primary">DC (Delantero Centro)</span>
+            </div>
+            <div class="prf-pos-row">
+              <span class="prf-pos-badge prf-pos-secondary">SECUNDARIA</span>
+              <span class="prf-pos-name" style="color:rgba(255,255,255,0.55);" id="hud-pos-secondary">ED (Extremo Derecho)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ COLUMNA 2: RADAR + STATS ═══ -->
+        <div class="prf-col-center">
+          <!-- Header -->
+          <div class="prf-center-header">
+            <div>
+              <div class="prf-eyebrow">RESUMEN DE DESEMPEÑO</div>
+              <h2 class="prf-center-title">PERFIL TÉCNICO COMPLETO</h2>
+            </div>
+            <div class="prf-year-badge">AÑO 2026</div>
+          </div>
+
+          <!-- Radar -->
+          <div style="position:relative; width:100%; flex:1; min-height:300px;">
+            <canvas id="chart-radar"></canvas>
+          </div>
+
+          <!-- Stats 3x2 Grid -->
+          <div class="prf-stats-grid" id="prf-stats-grid"></div>
+        </div>
+
+        <!-- ═══ COLUMNA 3: DERECHA ═══ -->
+        <div class="prf-col-right">
+
+          <!-- Wearables -->
+          <div class="prf-card">
+            <div class="prf-card-title"><i data-lucide="radio" style="width:11px;"></i> WEARABLES</div>
+            <div class="prf-wearable-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prf-device-icon prf-device-gold">O</div>
+                <span class="prf-device-name">OURA RING</span>
+              </div>
+              <span class="prf-badge-on" id="w-oura">ON</span>
+            </div>
+            <div class="prf-wearable-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prf-device-icon"><i data-lucide="watch" style="width:11px;color:#fff;"></i></div>
+                <span class="prf-device-name">APPLE WATCH</span>
+              </div>
+              <span class="prf-badge-pct" id="w-apple">94%</span>
+            </div>
+            <div class="prf-wearable-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prf-device-icon"><i data-lucide="shield" style="width:11px;color:#fff;"></i></div>
+                <span class="prf-device-name">PETO GPS</span>
+              </div>
+              <span class="prf-badge-on" id="w-peto">ON</span>
+            </div>
+          </div>
+
+          <!-- Biometría -->
+          <div class="prf-card">
+            <div class="prf-card-title"><i data-lucide="heart-pulse" style="width:11px;"></i> BIOMETRÍA</div>
+            <div class="prf-bio-line">
+              <span class="prf-bio-label">ÍNDICE MASA CORPORAL</span>
+              <span class="prf-bio-val" id="bio-val-imc">23.1</span>
+            </div>
+            <div class="bio-track" style="margin:5px 0 14px;"><div class="bio-fill" id="bio-fill-imc" style="width:60%;"></div></div>
+
+            <div class="prf-bio-line" style="margin-bottom:8px;">
+              <span class="prf-bio-label">ALTURA</span>
+              <span class="prf-bio-val"><span id="bio-val-alt">1.76</span> <span style="font-size:0.6rem;color:var(--text-muted);">m</span></span>
+            </div>
+            <div class="prf-bio-line" style="margin-bottom:14px;">
+              <span class="prf-bio-label">PESO</span>
+              <span class="prf-bio-val"><span id="bio-val-peso">73</span> <span style="font-size:0.6rem;color:var(--text-muted);">kg</span></span>
+            </div>
+
+            <div class="prf-bio-pulso">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <i data-lucide="heart" style="width:13px;color:#e11d48;"></i>
+                <span class="prf-bio-label">PULSO EN REPOSO</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="prf-bio-val" id="bio-val-pulso">54 LPM</span>
+                <span class="prf-badge-on" style="font-size:0.5rem;padding:2px 6px;">ÓPTIMO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Partidos Jugados -->
+          <div class="prf-card">
+            <div class="prf-card-title"><i data-lucide="trophy" style="width:11px;"></i> PARTIDOS JUGADOS</div>
+            <div class="prf-matches-grid">
+              <div class="prf-match-col">
+                <div class="prf-match-num" id="pm-f5">24</div>
+                <div class="prf-match-label">FÚTBOL 5</div>
+              </div>
+              <div class="prf-match-col">
+                <div class="prf-match-num" id="pm-f7">12</div>
+                <div class="prf-match-label">FÚTBOL 7</div>
+              </div>
+              <div class="prf-match-col">
+                <div class="prf-match-num" id="pm-f11">8</div>
+                <div class="prf-match-label">FÚTBOL 11</div>
+              </div>
+            </div>
+            <div class="prf-total-row">
+              <span style="font-size:0.65rem;color:var(--text-muted);font-weight:700;">TOTAL 2026</span>
+              <span style="font-size:1rem;font-weight:900;color:var(--team-primary);" id="pm-total">44 Partidos</span>
+            </div>
+          </div>
+
+          <!-- Fatiga Lab -->
+          <div class="prf-card prf-fatigue-card">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div class="prf-fatigue-circle">
+                <svg viewBox="0 0 36 36" class="fatigue-svg">
+                  <path class="fatigue-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="fatigue-fill" id="fatigue-path" stroke-dasharray="91, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div class="fatigue-pct" id="hud-fatigue-pct">91%</div>
+              </div>
+              <div>
+                <div style="font-size:0.55rem;font-weight:900;color:var(--team-primary);letter-spacing:1.5px;text-transform:uppercase;">FATIGA LAB</div>
+                <div style="font-size:0.85rem;font-weight:900;color:#fff;margin-top:3px;" id="hud-fatigue-label">Recuperación Lista</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+
+      <div id="pl-evolution" class="page hud-content">
+        <div class="page-title">Tu Evolución Analítica</div>
+        <div class="grid-2">
+          <div class="card"><div class="card-title">Overall (Proyección 8 semanas)</div><div class="chart-container-regular"><canvas id="chart-player-overall"></canvas></div></div>
+        </div>
+      </div>
+
+      <div id="pl-training" class="page hud-content">
+        <div class="page-title">Módulo de Entrenamiento</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Foco de Mejora</div>
+            <select id="target-stat" class="ob-input" style="background: var(--bg-dark);" onchange="updateRoutine()">
+              <option value="ritmo">Aceleración y Ritmo</option><option value="fisico">Fuerza y Físico</option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="card-title">Rutina Sugerida</div>
+            <div id="routine-content" style="font-size: 0.95rem; line-height: 1.6; color: var(--text-main);"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="src/js/data/mockData.js"></script>
+<script src="src/js/core/state.js"></script>
+<script src="src/js/modules/player.js"></script>
+<script src="src/js/modules/academy.js"></script>
+<script src="src/js/modules/auth.js"></script>
+<script src="src/js/main.js"></script>
+</body>
+</html>
+

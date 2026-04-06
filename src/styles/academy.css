@@ -11,10 +11,16 @@
 }
 #sidebar-dt .hud-logo {
   padding: 30px 24px;
-  font-size: 1.4rem;
-  color: #fff;
   border-bottom: 1px solid rgba(255,255,255,0.03);
   margin-bottom: 20px;
+  gap: 8px;
+}
+#sidebar-dt .hud-logo-image {
+  height: 40px;
+}
+#sidebar-dt .hud-logo-subtitle {
+  font-size: 0.55rem;
+  letter-spacing: 0.7px;
 }
 #sidebar-dt .hud-nav-item {
   padding: 12px 24px;
@@ -42,6 +48,16 @@
 #sidebar-dt .hud-nav-item.active i {
   opacity: 1;
   color: #00f5d4;
+}
+
+#topnav-dt .dt-topnav-brand {
+  min-width: 0;
+}
+#topnav-dt .dt-topnav-title {
+  white-space: nowrap;
+}
+#topnav-dt .dt-topnav-subtitle {
+  white-space: nowrap;
 }
 
 /* Manager Academy Command Surface */
@@ -920,6 +936,338 @@
   font-weight: 700;
   color: #00f5d4;
   margin-left: 4px;
+}
+
+@media (max-width: 980px) {
+  #dt-dashboard,
+  #dt-academy {
+    padding: 16px !important;
+  }
+
+  #sidebar-dt {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 8px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  #sidebar-dt .hud-logo {
+    display: flex;
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding: 0 8px 0 0;
+  }
+
+  #sidebar-dt .hud-logo-image {
+    height: 30px;
+  }
+
+  #sidebar-dt .hud-nav-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 9px 10px;
+    font-size: 0.7rem;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 8px;
+    gap: 8px;
+  }
+
+  #sidebar-dt .hud-nav-item.active {
+    border-bottom-color: #00f5d4;
+  }
+
+  #topnav-dt {
+    padding: 10px 12px !important;
+    height: auto !important;
+    min-height: 58px !important;
+    gap: 10px !important;
+    flex-wrap: wrap;
+  }
+
+  #topnav-dt > div:nth-child(1) {
+    width: 100%;
+  }
+
+  #topnav-dt > div:nth-child(2) {
+    max-width: none !important;
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+
+  .academy-command-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .academy-command-header h1 {
+    font-size: 1.45rem;
+  }
+
+  .academy-hero-body {
+    padding: 18px 16px 14px;
+  }
+
+  .academy-hero-title-row h2 {
+    font-size: clamp(1.3rem, 7vw, 1.9rem);
+  }
+
+  .academy-video-panel {
+    padding: 12px;
+  }
+
+  .academy-panel-title-group h3 {
+    font-size: 1.05rem;
+  }
+
+  .academy-video-thumb {
+    height: 132px;
+  }
+
+  .dashboard-footer-kpis {
+    margin-top: 18px;
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .status-panel {
+    gap: 12px;
+  }
+
+  .academy-regional-head {
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .column-header {
+    padding: 12px 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .column-title {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+  }
+
+  .column-stat {
+    min-width: 42px;
+  }
+
+  .column-badge {
+    font-size: 0.58rem;
+    padding: 3px 8px;
+  }
+
+  .filter-btn {
+    padding: 8px 10px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 600px) {
+  #dt-dashboard,
+  #dt-academy {
+    padding: 12px !important;
+  }
+
+  .academy-panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .academy-pill {
+    font-size: 0.58rem;
+  }
+
+  .academy-growth-panel,
+  .academy-efficiency-card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  #topnav-dt {
+    padding-left: max(8px, env(safe-area-inset-left)) !important;
+    padding-right: max(8px, env(safe-area-inset-right)) !important;
+  }
+
+  #topnav-dt .dt-topnav-title {
+    font-size: 0.86rem !important;
+    letter-spacing: 0.4px !important;
+  }
+
+  #topnav-dt .dt-topnav-subtitle {
+    font-size: 0.64rem !important;
+  }
+
+  #topnav-dt .hud-topnav-logo-image {
+    height: 24px;
+  }
+
+  #sidebar-dt .hud-logo-image {
+    height: 24px;
+  }
+
+  .academy-command-header h1 {
+    font-size: 1.22rem;
+  }
+
+  .academy-command-header p {
+    font-size: 0.64rem;
+    letter-spacing: 1px;
+  }
+
+  .academy-hero-panel {
+    min-height: 176px;
+  }
+
+  .academy-hero-body {
+    padding: 14px 12px 10px;
+  }
+
+  .academy-hero-title-row {
+    gap: 8px;
+  }
+
+  .academy-hero-title-row h2 {
+    font-size: 1.28rem;
+    line-height: 1.08;
+  }
+
+  .academy-select-btn {
+    padding: 8px 9px;
+    font-size: 0.61rem;
+    letter-spacing: 0.5px;
+  }
+
+  .academy-hero-meta {
+    gap: 6px;
+    font-size: 0.62rem;
+    letter-spacing: 0.5px;
+  }
+
+  .academy-hero-kpis {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .academy-kpi-box {
+    min-width: 84px;
+    padding: 6px 8px;
+  }
+
+  .academy-kpi-val {
+    font-size: 0.95rem;
+  }
+
+  .academy-edit-image-btn {
+    font-size: 0.64rem;
+    letter-spacing: 0.5px;
+    padding: 9px 10px;
+  }
+
+  .academy-video-thumb {
+    height: 118px;
+  }
+
+  .academy-video-body h4 {
+    font-size: 0.88rem;
+    margin-bottom: 9px;
+  }
+
+  .academy-video-cat {
+    font-size: 0.58rem;
+    margin-bottom: 6px;
+  }
+
+  .academy-mini-btn {
+    padding: 6px 9px;
+    font-size: 0.6rem;
+    min-height: 34px;
+  }
+
+  .academy-action-card {
+    min-height: 78px;
+    font-size: 0.64rem;
+    gap: 8px;
+  }
+
+  .academy-growth-info strong {
+    font-size: 0.82rem;
+  }
+
+  .academy-growth-info small {
+    font-size: 0.6rem;
+  }
+
+  .academy-growth-ovr {
+    font-size: 0.68rem;
+  }
+
+  .academy-eff-main {
+    font-size: 1.8rem;
+  }
+
+  .academy-eff-delta {
+    font-size: 0.72rem;
+  }
+
+  .column-focus-btn {
+    padding: 3px 6px;
+    font-size: 0.52rem;
+  }
+
+  .player-card-mini {
+    padding: 8px 10px;
+  }
+
+  .p-mini-name {
+    font-size: 0.72rem;
+  }
+
+  .p-mini-pos {
+    font-size: 0.62rem;
+  }
+
+  .sm-val {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 370px) {
+  #topnav-dt .dt-topnav-subtitle {
+    display: none;
+  }
+
+  .academy-hero-title-row h2 {
+    font-size: 1.16rem;
+  }
+
+  .academy-video-thumb {
+    height: 104px;
+  }
+
+  .academy-panel-title-group h3 {
+    font-size: 0.95rem;
+  }
+
+  .academy-pill {
+    padding: 3px 8px;
+  }
+
+  .column-header {
+    padding: 10px 10px;
+  }
+
+  .column-title {
+    font-size: 0.68rem;
+  }
 }
 
 

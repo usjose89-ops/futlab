@@ -65,15 +65,7 @@
   <div class="login-modal-card">
     <button class="login-modal-close" data-action="close-login-modal">✕</button>
     <div class="login-modal-logo">
-      <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-        <path d="M24 2L44 13.5V34.5L24 46L4 34.5V13.5L24 2Z" stroke="#22c55e" stroke-width="2.5" fill="none"/>
-        <circle cx="24" cy="16" r="5" stroke="#22c55e" stroke-width="2" fill="none"/>
-        <path d="M10 36 Q24 20 38 36" stroke="#22c55e" stroke-width="2" fill="none"/>
-        <rect x="16" y="28" width="3" height="8" fill="#22c55e" rx="1"/>
-        <rect x="21" y="24" width="3" height="12" fill="#22c55e" rx="1"/>
-        <rect x="26" y="20" width="3" height="16" fill="#22c55e" rx="1"/>
-      </svg>
-      <span>FutLab</span>
+      <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="login-modal-logo-image">
     </div>
     <h3 class="login-modal-title">Iniciar Sesión</h3>
     <p class="login-modal-subtitle">Ingresa a tu portal de rendimiento</p>
@@ -321,16 +313,8 @@
     <!-- ═══ SIDEBAR: MODO MANAGER (DT) ═══ -->
     <nav id="sidebar-dt" class="hud-sidebar" style="display:none;">
       <div class="hud-logo">
-        <div style="display:flex; align-items:center; gap:12px;">
-           <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-             <path d="M24 2L44 13.5V34.5L24 46L4 34.5V13.5L24 2Z" stroke="#00f5d4" stroke-width="2.5" fill="none"/>
-             <rect x="16" y="28" width="3" height="8" fill="#00f5d4" rx="1"/>
-           </svg>
-           <div style="line-height:1.1;">
-             <span style="font-size:1.1rem; font-weight:900; letter-spacing:1px; color:#fff;">FUTLAB</span><br>
-             <span style="font-size:0.55rem; color:#94a3b8; font-weight:600; letter-spacing:0.5px;">PERFORMANCE UNIT</span>
-           </div>
-        </div>
+        <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="hud-logo-image">
+        <span class="hud-logo-subtitle">Performance Unit</span>
       </div>
       
       <div class="hud-nav-item" data-action="show-page" data-page="dt-dashboard">
@@ -374,7 +358,10 @@
 
     <!-- ═══ SIDEBAR: MODO JUGADOR (PLAYER) ═══ -->
     <nav id="sidebar-player" class="hud-sidebar" style="display:none;">
-      <div class="hud-logo">FUTLAB<span>RENDIMIENTO DE ÉLITE</span></div>
+      <div class="hud-logo">
+        <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="hud-logo-image">
+        <span class="hud-logo-subtitle">Rendimiento de Élite</span>
+      </div>
       
       <div class="pl-nav-group">
         <div class="hud-nav-item active" id="nav-pl-profile" data-action="show-page" data-page="pl-profile"><i data-lucide="layout-dashboard" style="width:16px;"></i> Panel de Control</div>
@@ -398,23 +385,29 @@
 
     <main class="hud-main">
       <header class="hud-topnav pl-topnav" id="topnav-player" style="display:none;">
-        <!-- Left: title + year -->
         <div class="pl-topnav-brand">
-          <div class="pl-topnav-title">PORTAL DE<br>RENDIMIENTO</div>
-          <div class="pl-topnav-year"><span style="font-size:0.5rem; display:block; opacity:0.5; letter-spacing:2px;">AÑO</span>2026</div>
+          <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="hud-topnav-logo-image">
         </div>
-        <!-- Tabs -->
         <nav class="pl-topnav-tabs">
-          <div class="pl-tab active">MÉTRICAS DE TEMPORADA</div>
-          <div class="pl-tab">GENERAL</div>
-          <div class="pl-search"><i data-lucide="search" style="width:13px; color:var(--text-muted);"></i><input type="text" placeholder="Buscar métricas..." style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; outline:none; width:130px;"></div>
+          <button class="pl-tab active" data-action="player-open-tab" data-page="pl-profile">Dashboard</button>
+          <button class="pl-tab" data-action="player-open-tab" data-page="pl-evolution">Evolución</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Partidos">Partidos</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Salud">Salud</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Videos">Videos</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Datos">Datos</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Analítica">Analítica</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Reportes">Reportes</button>
+          <button class="pl-tab" data-action="show-alert" data-message="Próximamente: Identidad">Identidad</button>
         </nav>
-        <!-- Right: icons + user -->
         <div class="pl-topnav-right">
-          <i data-lucide="bell" style="width:16px; color:var(--text-muted); cursor:pointer;"></i>
-          <i data-lucide="history" style="width:16px; color:var(--text-muted); cursor:pointer;"></i>
+          <button class="pl-icon-btn" data-action="show-alert" data-message="Notificaciones">
+            <i data-lucide="bell" style="width:16px;"></i>
+          </button>
+          <button class="pl-icon-btn" data-action="show-alert" data-message="Configuración">
+            <i data-lucide="settings" style="width:16px;"></i>
+          </button>
           <div class="pl-user-chip">
-            <div>
+            <div class="pl-user-chip-text">
               <div style="font-size:0.7rem; font-weight:900; color:#fff; line-height:1;" id="topnav-player-name">NICOLÁS LEIVA</div>
               <div style="font-size:0.55rem; color:var(--text-muted); letter-spacing:1px; margin-top:2px;">JUGADOR LIBRE</div>
             </div>
@@ -426,10 +419,11 @@
       </header>
 
       <header class="hud-topnav" id="topnav-dt" style="display:none; justify-content: space-between; padding: 0 30px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span style="font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:1px;">CENTRO TÁCTICO</span>
+        <div class="dt-topnav-brand" style="display: flex; align-items: center; gap: 12px;">
+          <img src="assets/images/branding/logo_portada_clean.png" alt="FutLab" class="hud-topnav-logo-image">
+          <span class="dt-topnav-title" style="font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:1px;">CENTRO TÁCTICO</span>
           <span style="color:#94a3b8; font-size:0.8rem; margin: 0 10px; opacity:0.5;">|</span>
-          <span style="font-size:0.75rem; font-weight:700; color:#94a3b8; letter-spacing:1px;">INTELIGENCIA DEPORTIVA</span>
+          <span class="dt-topnav-subtitle" style="font-size:0.75rem; font-weight:700; color:#94a3b8; letter-spacing:1px;">INTELIGENCIA DEPORTIVA</span>
         </div>
         
         <div style="display:flex; align-items:center; gap:24px; flex:1; justify-content:center; max-width:600px;">
@@ -650,191 +644,164 @@
         </div>
       </div>
 
-      <div id="pl-profile" class="page hud-grid-elite">
-
-        <!-- ═══ COLUMNA 1: PERFIL JUGADOR ═══ -->
-        <div class="prf-col-left">
-
-          <!-- Tarjeta Foto / OVR -->
-          <div class="player-card-elite">
-            <div class="portrait-bg" id="card-portrait" style="background-image:url('assets/images/shared/jugador.jpg');"></div>
-            <div class="card-gradient"></div>
-
-            <!-- Nombre sobre la foto -->
-            <div class="card-top">
-              <div class="player-name-elite" id="hud-name">NICOLÁS<br>LEIVA</div>
-              <div style="font-size:0.6rem; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.45); margin-top:3px; text-transform:uppercase;">JUGADOR LIBRE</div>
-            </div>
-
-            <!-- OVR + detalles abajo -->
-            <div class="card-bottom">
-              <div style="font-size:0.6rem; font-weight:800; color:rgba(255,255,255,0.45); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">CALIFICACIÓN GENERAL</div>
-              <div style="display:flex; align-items:flex-end; gap:12px; margin-bottom:14px;">
-                <div class="card-ovr" id="hud-ovr">88</div>
-                <div style="display:flex; flex-direction:column; align-items:center; gap:3px; padding-bottom:4px;">
-                  <div class="ovr-badge-icon">✓</div>
-                  <div id="hud-status-label" style="font-size:0.5rem; font-weight:900; color:var(--team-primary); letter-spacing:1px; text-align:center; line-height:1.2;">ESTATUS<br>ÉLITE</div>
-                </div>
-              </div>
-
-              <!-- Pie + Nacimiento -->
-              <div class="prf-detail-grid">
-                <div class="prf-detail-item">
-                  <div class="prf-detail-label">⚡ PIE PREFERIDO</div>
-                  <div class="prf-detail-val" id="hud-foot">DERECHO</div>
-                </div>
-                <div class="prf-detail-item">
-                  <div class="prf-detail-label">NACIMIENTO</div>
-                  <div class="prf-detail-val" id="hud-birthdate">03/04/1988</div>
-                </div>
-              </div>
-              <!-- Habilidades -->
-              <div class="prf-detail-grid" style="margin-top:7px;">
-                <div class="prf-detail-item">
-                  <div class="prf-detail-label">HABILIDADES</div>
-                  <div class="prf-stars" id="hud-stars-strong">★★★★★</div>
-                </div>
-                <div class="prf-detail-item">
-                  <div class="prf-detail-label">PIE DÉBIL</div>
-                  <div class="prf-stars prf-stars-weak" id="hud-stars-weak">★★★★★</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Caja de Posición -->
-          <div class="prf-position-box">
-            <div class="prf-section-label">POSICIÓN</div>
-            <div class="prf-pos-row">
-              <span class="status-badge status-primary">ESTATUS ÉLITE</span>
-              <span class="prf-pos-name" id="hud-pos-primary">DC (Delantero Centro)</span>
-            </div>
-            <div class="prf-pos-row">
-              <span class="prf-pos-badge prf-pos-secondary">SECUNDARIA</span>
-              <span class="prf-pos-name" style="color:rgba(255,255,255,0.55);" id="hud-pos-secondary">ED (Extremo Derecho)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ COLUMNA 2: RADAR + STATS ═══ -->
-        <div class="prf-col-center">
-          <!-- Header -->
-          <div class="prf-center-header">
-            <div>
-              <div class="prf-eyebrow">RESUMEN DE DESEMPEÑO</div>
-              <h2 class="prf-center-title">PERFIL TÉCNICO COMPLETO</h2>
-            </div>
-            <div class="prf-year-badge">AÑO 2026</div>
-          </div>
-
-          <!-- Radar -->
-          <div style="position:relative; width:100%; flex:1; min-height:300px;">
-            <canvas id="chart-radar"></canvas>
-          </div>
-
-          <!-- Stats 3x2 Grid -->
-          <div class="prf-stats-grid" id="prf-stats-grid"></div>
-        </div>
-
-        <!-- ═══ COLUMNA 3: DERECHA ═══ -->
-        <div class="prf-col-right">
-
-          <!-- Wearables -->
-          <div class="prf-card">
-            <div class="prf-card-title"><i data-lucide="radio" style="width:11px;"></i> WEARABLES</div>
-            <div class="prf-wearable-row">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="prf-device-icon prf-device-gold">O</div>
-                <span class="prf-device-name">OURA RING</span>
-              </div>
-              <span class="prf-badge-on" id="w-oura">ON</span>
-            </div>
-            <div class="prf-wearable-row">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="prf-device-icon"><i data-lucide="watch" style="width:11px;color:#fff;"></i></div>
-                <span class="prf-device-name">APPLE WATCH</span>
-              </div>
-              <span class="prf-badge-pct" id="w-apple">94%</span>
-            </div>
-            <div class="prf-wearable-row">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="prf-device-icon"><i data-lucide="shield" style="width:11px;color:#fff;"></i></div>
-                <span class="prf-device-name">PETO GPS</span>
-              </div>
-              <span class="prf-badge-on" id="w-peto">ON</span>
-            </div>
-          </div>
-
-          <!-- Biometría -->
-          <div class="prf-card">
-            <div class="prf-card-title"><i data-lucide="heart-pulse" style="width:11px;"></i> BIOMETRÍA</div>
-            <div class="prf-bio-line">
-              <span class="prf-bio-label">ÍNDICE MASA CORPORAL</span>
-              <span class="prf-bio-val" id="bio-val-imc">23.1</span>
-            </div>
-            <div class="bio-track" style="margin:5px 0 14px;"><div class="bio-fill" id="bio-fill-imc" style="width:60%;"></div></div>
-
-            <div class="prf-bio-line" style="margin-bottom:8px;">
-              <span class="prf-bio-label">ALTURA</span>
-              <span class="prf-bio-val"><span id="bio-val-alt">1.76</span> <span style="font-size:0.6rem;color:var(--text-muted);">m</span></span>
-            </div>
-            <div class="prf-bio-line" style="margin-bottom:14px;">
-              <span class="prf-bio-label">PESO</span>
-              <span class="prf-bio-val"><span id="bio-val-peso">73</span> <span style="font-size:0.6rem;color:var(--text-muted);">kg</span></span>
-            </div>
-
-            <div class="prf-bio-pulso">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <i data-lucide="heart" style="width:13px;color:#e11d48;"></i>
-                <span class="prf-bio-label">PULSO EN REPOSO</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span class="prf-bio-val" id="bio-val-pulso">54 LPM</span>
-                <span class="prf-badge-on" style="font-size:0.5rem;padding:2px 6px;">ÓPTIMO</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Partidos Jugados -->
-          <div class="prf-card">
-            <div class="prf-card-title"><i data-lucide="trophy" style="width:11px;"></i> PARTIDOS JUGADOS</div>
-            <div class="prf-matches-grid">
-              <div class="prf-match-col">
-                <div class="prf-match-num" id="pm-f5">24</div>
-                <div class="prf-match-label">FÚTBOL 5</div>
-              </div>
-              <div class="prf-match-col">
-                <div class="prf-match-num" id="pm-f7">12</div>
-                <div class="prf-match-label">FÚTBOL 7</div>
-              </div>
-              <div class="prf-match-col">
-                <div class="prf-match-num" id="pm-f11">8</div>
-                <div class="prf-match-label">FÚTBOL 11</div>
-              </div>
-            </div>
-            <div class="prf-total-row">
-              <span style="font-size:0.65rem;color:var(--text-muted);font-weight:700;">TOTAL 2026</span>
-              <span style="font-size:1rem;font-weight:900;color:var(--team-primary);" id="pm-total">44 Partidos</span>
-            </div>
-          </div>
-
-          <!-- Fatiga Lab -->
-          <div class="prf-card prf-fatigue-card">
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div class="prf-fatigue-circle">
-                <svg viewBox="0 0 36 36" class="fatigue-svg">
-                  <path class="fatigue-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path class="fatigue-fill" id="fatigue-path" stroke-dasharray="91, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div class="fatigue-pct" id="hud-fatigue-pct">91%</div>
-              </div>
+      <div id="pl-profile" class="page pldash-page">
+        <div class="pldash-layout">
+          <aside class="pldash-player-card">
+            <div class="pldash-player-head">
               <div>
-                <div style="font-size:0.55rem;font-weight:900;color:var(--team-primary);letter-spacing:1.5px;text-transform:uppercase;">FATIGA LAB</div>
-                <div style="font-size:0.85rem;font-weight:900;color:#fff;margin-top:3px;" id="hud-fatigue-label">Recuperación Lista</div>
+                <span class="pldash-chip">PREMIUM PRO</span>
+                <div class="pldash-role" id="pldash-role">DELANTERO / ED</div>
+              </div>
+              <div class="pldash-ovr-box">
+                <strong id="pldash-ovr">88</strong>
+                <span>OVR</span>
               </div>
             </div>
-          </div>
 
+            <div class="pldash-photo-wrap">
+              <div id="card-portrait" class="pldash-photo-bg" style="background-image:url('assets/images/shared/jugador.jpg');"></div>
+              <div class="pldash-photo-overlay"></div>
+            </div>
+
+            <div class="pldash-player-body">
+              <span class="pldash-caption">CAPITÁN</span>
+              <h1 id="pldash-name">MATEO VALDÉS</h1>
+              <p class="pldash-status" id="pldash-status">JUGADOR LIBRE</p>
+              <p class="pldash-academy" id="pldash-academy">FUTLAB SANTIAGO</p>
+
+              <div class="pldash-player-meta">
+                <div class="pldash-meta-box">
+                  <span>Nacimiento</span>
+                  <strong id="pldash-birth-year">2004</strong>
+                  <small id="pldash-age">19 años</small>
+                </div>
+                <div class="pldash-meta-box">
+                  <span>Pie Preferido</span>
+                  <strong id="pldash-foot">Derecho</strong>
+                </div>
+              </div>
+
+              <button class="pldash-btn-main" data-action="show-alert" data-message="Editar perfil">Editar Perfil</button>
+              <div class="pldash-btn-row">
+                <button class="pldash-btn-alt" data-action="show-alert" data-message="Añadir test">Añadir Test</button>
+                <button class="pldash-btn-alt" data-action="show-alert" data-message="Asignar plan">Asignar Plan</button>
+              </div>
+            </div>
+          </aside>
+
+          <section class="pldash-main">
+            <div class="pldash-kpis">
+              <article class="pldash-kpi-card pldash-kpi-card-highlight">
+                <span class="pldash-kpi-label">Percentil</span>
+                <div class="pldash-kpi-value"><strong id="pldash-percentil">92%</strong> <span>↗</span></div>
+              </article>
+              <article class="pldash-kpi-card">
+                <span class="pldash-kpi-label">Readiness</span>
+                <div class="pldash-kpi-value"><strong id="pldash-readiness">82%</strong> <span class="pldash-state-ok">Óptimo</span></div>
+              </article>
+              <article class="pldash-kpi-card">
+                <span class="pldash-kpi-label">Evolución</span>
+                <div class="pldash-kpi-value"><strong id="pldash-evolution">+3</strong> <span>Puntos</span></div>
+              </article>
+            </div>
+
+            <div class="pldash-level-row">
+              <article class="pldash-level-card">
+                <div class="pldash-level-block">
+                  <span class="pldash-kpi-label">Nivel Actual</span>
+                  <h3 id="pldash-level-current">Amateur Fuerte</h3>
+                  <span class="pldash-badge-live">En crecimiento</span>
+                </div>
+                <div class="pldash-level-block">
+                  <span class="pldash-kpi-label">Próximo nivel</span>
+                  <h3 id="pldash-level-next">Competitivo</h3>
+                  <div class="pldash-progress-wrap">
+                    <span>Progreso</span>
+                    <strong id="pldash-progress-label">68%</strong>
+                  </div>
+                  <div class="pldash-progress"><div id="pldash-progress-fill"></div></div>
+                </div>
+              </article>
+              <article class="pldash-test-card">
+                <span class="pldash-kpi-label">Último Test</span>
+                <h3 id="pldash-last-test">Agosto 24</h3>
+                <p id="pldash-next-test">Próximo: Sep 12</p>
+              </article>
+            </div>
+
+            <article class="pldash-performance-card">
+              <div class="pldash-performance-main">
+                <div class="pldash-performance-head">
+                  <h3>Perfil de Desempeño</h3>
+                  <div class="pldash-radar-legend">
+                    <span><i></i>Jugador actual</span>
+                    <span><i class="is-benchmark"></i>Media posición</span>
+                  </div>
+                </div>
+                <div class="pldash-radar-wrap">
+                  <canvas id="chart-radar"></canvas>
+                </div>
+              </div>
+              <div class="pldash-performance-side">
+                <h4>Atributos Clave</h4>
+                <div id="pldash-key-attrs"></div>
+              </div>
+            </article>
+
+            <div class="pldash-lower-grid">
+              <article class="pldash-health-card">
+                <div class="pldash-mini-head">Salud & Recuperación <span class="pldash-online-dot"></span></div>
+                <div class="pldash-health-item">
+                  <div>
+                    <span>Fatiga global</span>
+                    <strong id="pldash-fatigue-status">Baja</strong>
+                  </div>
+                  <small id="pldash-fatigue-value">12% / 100%</small>
+                </div>
+                <div class="pldash-health-item">
+                  <div>
+                    <span>Sueño</span>
+                    <strong id="pldash-sleep">7h 45m</strong>
+                  </div>
+                  <small id="pldash-sleep-eff">94% Eficiencia</small>
+                </div>
+                <div class="pldash-health-item">
+                  <div>
+                    <span>Estrés (VFC)</span>
+                    <strong id="pldash-stress">Moderado</strong>
+                  </div>
+                  <small id="pldash-stress-ms">62 ms</small>
+                </div>
+              </article>
+
+              <div class="pldash-right-stack">
+                <article class="pldash-bio-card">
+                  <div class="pldash-mini-head">Biometría</div>
+                  <div class="pldash-bio-grid">
+                    <div class="pldash-bio-metric">
+                      <span>FC Reposo</span>
+                      <strong id="pldash-resting-hr">54</strong>
+                      <small>ppm</small>
+                    </div>
+                    <div class="pldash-bio-metric">
+                      <span>IMC</span>
+                      <strong id="pldash-imc">23.1</strong>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="pldash-devices-card">
+                  <div class="pldash-mini-head">Dispositivos Sincronizados</div>
+                  <div class="pldash-device-tags" id="pldash-devices"></div>
+                </article>
+              </div>
+            </div>
+
+            <article class="pldash-notes-card">
+              <span class="pldash-kpi-label">Notas del entrenador</span>
+              <p id="pldash-coach-note">"Mateo mantiene un excelente readiness tras las pruebas de rendimiento. Enfocarse en mantener la explosividad en espacios reducidos durante la fase competitiva."</p>
+            </article>
+          </section>
         </div>
       </div>
 

@@ -1,330 +1,424 @@
 // Player profile and visualization module
 function loadPlayerProfile(playerId, db) {
   let found = null;
-  db.academies.forEach(aca => {
-    const p = aca.players.find(pl => pl.id === playerId);
-    if(p) found = p;
+  let academyName = 'FUTLAB SANTIAGO';
+
+  db.academies.forEach((aca) => {
+    const p = aca.players.find((pl) => pl.id === playerId);
+    if (p) {
+      found = p;
+      academyName = `FUTLAB ${String(aca.name || 'SANTIAGO').toUpperCase()}`;
+    }
   });
-  
-  if(found) {
+
+  if (found) {
     appState.profile = {
-      Bio: { 
-        Nombre: found.name, 
-        Edad: found.age, 
-        Peso: found.weight, 
-        Estatura: (found.height > 5 ? found.height : found.height * 100), // Handle meters vs cm
-        Pos: found.position, 
+      Bio: {
+        Nombre: found.name,
+        Edad: found.age,
+        Peso: found.weight,
+        Estatura: found.height > 5 ? found.height : found.height * 100,
+        Pos: found.position,
         Avatar: null,
         Foot: found.foot || 'DERECHO',
-        Birthdate: found.birthdate || '01/01/2000'
+        Birthdate: found.birthdate || '2000-01-01'
       },
       Stats: found.stats,
-      Theme: found.colorTheme || 'gold', 
+      Theme: found.colorTheme || found.theme || 'rmadrid',
       Status: found.status,
-      Wearables: found.wearables,
+      Wearables: found.wearables || {},
       Fatigue: found.fatigue,
       Ovr: found.ovr,
-      Subattrs: found.subattrs
+      Subattrs: found.subattrs,
+      AcademyName: academyName
     };
-    console.log("Perfil cargado en appState:", appState.profile.Bio.Nombre);
   } else {
-    console.error("Jugador no encontrado:", playerId);
+    console.error('Jugador no encontrado:', playerId);
   }
 }
+
 function handleImageUpload(event) {
   const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      if(appState.profile && appState.profile.Bio) {
-        appState.profile.Bio.Avatar = e.target.result;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.profile));
-        renderAvatar();
-      }
-    }
-    reader.readAsDataURL(file);
-  }
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (!appState.profile || !appState.profile.Bio) return;
+    appState.profile.Bio.Avatar = e.target.result;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.profile));
+    renderAvatar();
+  };
+  reader.readAsDataURL(file);
 }
 
 function renderAvatar() {
   const bg = document.getElementById('card-portrait');
   const mini = document.getElementById('mini-avatar-container-pl');
+
   if (appState.profile && appState.profile.Bio && appState.profile.Bio.Avatar) {
-    if(bg) bg.style.backgroundImage = `url('${appState.profile.Bio.Avatar}')`;
-    if(mini) mini.innerHTML = `<img src="${appState.profile.Bio.Avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    if (bg) bg.style.backgroundImage = `url('${appState.profile.Bio.Avatar}')`;
+    if (mini) {
+      mini.innerHTML = `<img src="${appState.profile.Bio.Avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
   }
-  // If no avatar, keep the default shared player image set in HTML
+}
+
+function toTitleCase(value) {
+  return String(value || '')
+    .toLowerCase()
+    .split(' ')
+    .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : ''))
+    .join(' ')
+    .trim();
+}
+
+function getBirthYear(birthdate) {
+  if (!birthdate) return '2004';
+  const text = String(birthdate);
+  const yearMatch = text.match(/(19|20)\d{2}/);
+  return yearMatch ? yearMatch[0] : '2004';
+}
+
+function getTopRoleLabel(pos) {
+  const map = {
+    DC: 'DELANTERO / ED',
+    ED: 'EXTREMO / DC',
+    EI: 'EXTREMO / DC',
+    MC: 'MEDIOCAMPO / MO',
+    MO: 'VOLANTE OFENSIVO',
+    DFC: 'DEFENSA / LD',
+    LD: 'LATERAL / CARRILERO',
+    LI: 'LATERAL / CARRILERO',
+    PO: 'PORTERO'
+  };
+  return map[pos] || `${String(pos || 'JUGADOR')} / POLIVALENTE`;
+}
+
+function getPerformanceLevel(ovr) {
+  const levels = [
+    { name: 'FORMATIVO', min: 0, max: 64 },
+    { name: 'AMATEUR FUERTE', min: 65, max: 74 },
+    { name: 'COMPETITIVO', min: 75, max: 84 },
+    { name: 'ELITE', min: 85, max: 100 }
+  ];
+
+  const current = levels.find((level) => ovr >= level.min && ovr <= level.max) || levels[1];
+  const currentIdx = levels.indexOf(current);
+  const next = levels[Math.min(currentIdx + 1, levels.length - 1)];
+  const band = Math.max(1, current.max - current.min);
+  const progress = Math.max(5, Math.min(99, Math.round(((ovr - current.min) / band) * 100)));
+
+  return { current, next, progress };
+}
+
+function getPositionBenchmark(pos) {
+  const map = {
+    DC: [70, 69, 57, 64, 36, 61],
+    ED: [74, 66, 61, 72, 34, 58],
+    MC: [68, 61, 71, 66, 63, 67],
+    DFC: [58, 44, 61, 52, 73, 76],
+    PO: [44, 33, 56, 42, 66, 59]
+  };
+  return map[pos] || [65, 58, 60, 61, 50, 55];
+}
+
+function formatMonthDay(dateText) {
+  const date = new Date(dateText);
+  if (Number.isNaN(date.getTime())) return 'Agosto 24';
+  const month = date.toLocaleDateString('es-CL', { month: 'long' });
+  return `${toTitleCase(month)} ${String(date.getDate()).padStart(2, '0')}`;
 }
 
 function updatePlayerUI() {
   try {
     const p = appState.profile;
-    if(!p || !p.Bio) return;
-    
-    const theme = THEME_PALETTES[p.Theme] || THEME_PALETTES['futlab'];
+    if (!p || !p.Bio) return;
+
+    const theme = THEME_PALETTES[p.Theme] || THEME_PALETTES.rmadrid;
     document.documentElement.style.setProperty('--team-primary', theme.primary);
     document.documentElement.style.setProperty('--team-glow', theme.bgTint);
-    
-    // Name
-    let nameParts = p.Bio.Nombre.split(' ');
-    setElementText('hud-name', `${nameParts[0] || ''}<br>${nameParts.slice(1).join(' ') || ''}`);
-    setElementText('topnav-player-name', p.Bio.Nombre.toUpperCase());
-    
-    // OVR and Status
-    const ovr = p.Ovr || 50;
-    setElementText('hud-ovr', ovr);
-    
-    const statusEl = document.getElementById('hud-status-label');
-    if(statusEl && typeof FootballStatsEngine !== 'undefined') {
-      const label = FootballStatsEngine.getLevelLabel(ovr);
-      statusEl.innerHTML = label.split(' ').map(w => w === 'AMATEUR' ? 'ESTATUS<br>AMATEUR' : w).join('<br>');
-      // Special case for "AMATEUR MEDIO" etc, let's just make it look good
-      if (label.includes('AMATEUR')) statusEl.innerHTML = 'ESTATUS<br>AMATEUR';
-      else statusEl.innerHTML = label.split(' ').join('<br>');
+
+    const ovr = Number(p.Ovr || 50);
+    const fatigue = Number.isFinite(p.Fatigue) ? p.Fatigue : 82;
+
+    setElementText('topnav-player-name', String(p.Bio.Nombre || '').toUpperCase());
+    setElementText('pldash-name', String(p.Bio.Nombre || '').toUpperCase().replace(' ', '<br>'));
+    setElementText('pldash-role', getTopRoleLabel(p.Bio.Pos));
+    setElementText('pldash-ovr', ovr);
+    setElementText('pldash-status', toTitleCase(p.Status || 'Jugador libre'));
+    setElementText('pldash-academy', p.AcademyName || 'FUTLAB SANTIAGO');
+
+    const year = getBirthYear(p.Bio.Birthdate);
+    const age = p.Bio.Edad || Math.max(14, new Date().getFullYear() - Number(year));
+    setElementText('pldash-birth-year', year);
+    setElementText('pldash-age', `${age} años`);
+    setElementText('pldash-foot', toTitleCase(p.Bio.Foot || 'Derecho'));
+
+    const percentile = Math.min(99, Math.max(68, ovr + 4));
+    const readiness = Math.min(99, Math.max(45, fatigue));
+    const evolution = Math.max(1, Math.round((ovr - 80) / 2));
+
+    setElementText('pldash-percentil', `${percentile}%`);
+    setElementText('pldash-readiness', `${readiness}%`);
+    setElementText('pldash-evolution', `+${evolution}`);
+
+    const levels = getPerformanceLevel(ovr);
+    setElementText('pldash-level-current', levels.current.name);
+    setElementText('pldash-level-next', levels.next.name);
+    setElementText('pldash-progress-label', `${levels.progress}%`);
+    const progressFill = document.getElementById('pldash-progress-fill');
+    if (progressFill) progressFill.style.width = `${levels.progress}%`;
+
+    const dbStr = localStorage.getItem('FutLab_DB_V1');
+    if (dbStr) {
+      const db = JSON.parse(dbStr);
+      const latest = Array.isArray(db.history) && db.history.length > 0 ? db.history[db.history.length - 1] : null;
+      if (latest && latest.date) {
+        setElementText('pldash-last-test', formatMonthDay(latest.date));
+        const next = new Date(latest.date);
+        next.setDate(next.getDate() + 14);
+        setElementText('pldash-next-test', `Próximo: ${formatMonthDay(next.toISOString())}`);
+      }
     }
 
-    // Foot, birthdate, position
-    setElementText('hud-foot', p.Bio.Foot || 'DERECHO');
-    setElementText('hud-birthdate', (p.Bio.Birthdate || '2010').split('-')[0]); // Just year for cleaner UI
-    
-    // Stars based on OVR
-    const strongStars = ovr >= 80 ? '★★★★★' : ovr >= 70 ? '★★★★☆' : '★★★☆☆';
-    const weakStars   = ovr >= 75 ? '★★★☆☆' : '★★☆☆☆';
-    setElementText('hud-stars-strong', strongStars);
-    setElementText('hud-stars-weak', weakStars);
-    
-    // Positions (use pos from Bio or defaults by position)
-    const posMap = {
-      'DC': { primary: 'DC (Delantero Centro)', secondary: 'ED (Extremo Derecho)' },
-      'ED': { primary: 'ED (Extremo Derecho)', secondary: 'DC (Delantero Centro)' },
-      'MC': { primary: 'Mediocampista Central', secondary: 'Mediocampista Ofensivo' },
-      'MO': { primary: 'Mediocampista Ofensivo', secondary: 'Mediocampista Central' },
-      'LD': { primary: 'Lateral Derecho', secondary: 'Mediocampista Derecho' },
-      'LI': { primary: 'Lateral Izquierdo', secondary: 'Extremo Izquierdo' },
-      'DFC': { primary: 'Defensa Central', secondary: 'Lateral Derecho' },
-      'PO': { primary: 'Portero', secondary: 'Portero' },
-    };
-    const pm = posMap[p.Bio.Pos] || { primary: p.Bio.Pos || 'MX', secondary: 'Polivalente' };
-    setElementText('hud-pos-primary', pm.primary);
-    setElementText('hud-pos-secondary', pm.secondary);
-    
-    // Biometría
-    let heightM = (p.Bio.Estatura / 100).toFixed(2);
-    let imc = (p.Bio.Peso / Math.pow(parseFloat(heightM), 2)).toFixed(1);
-    setElementText('bio-val-imc', imc);
-    setElementText('bio-val-alt', heightM);
-    setElementText('bio-val-peso', p.Bio.Peso.toFixed(0));
-    const fillImc = document.getElementById('bio-fill-imc');
-    if(fillImc) fillImc.style.width = Math.min(100, Math.max(10, (imc/30)*100)) + '%';
-    
-    // Pulso simulado
-    const pulso = 48 + Math.floor(Math.random() * 18);
-    setElementText('bio-val-pulso', pulso + ' LPM');
-    
-    // Matches (Simulated)
-    const f5 = 12;
-    const f7 = 24;
-    const f11 = 8;
-    setElementText('pm-f5', f5);
-    setElementText('pm-f7', f7);
-    setElementText('pm-f11', f11);
-    setElementText('pm-total', (f5+f7+f11) + ' Partidos');
-    
-    // Fatigue
-    const fatigue = p.Fatigue || (75 + Math.floor(Math.random() * 20));
-    const fatiguePath = document.getElementById('fatigue-path');
-    if(fatiguePath) fatiguePath.setAttribute('stroke-dasharray', `${fatigue}, 100`);
-    setElementText('hud-fatigue-pct', fatigue + '%');
-    const fatigueLabel = fatigue >= 85 ? 'Recuperación Lista' : fatigue >= 70 ? 'En Recuperación' : 'Recuperación Baja';
-    setElementText('hud-fatigue-label', fatigueLabel);
-    
-    // Avatar
-    renderAvatar();
-    
-    // Build sub-stats grid
-    renderStatsGrid(p.Stats, ovr, p.Subattrs);
-    
-    // Radar
+    const heightM = Math.max(1.4, Number((Number(p.Bio.Estatura || 175) / 100).toFixed(2)) || 1.75);
+    const weight = Number(p.Bio.Peso || 72);
+    const imc = Number((weight / (heightM * heightM)).toFixed(1));
+    const restingHr = Math.max(48, Math.min(72, 50 + Math.round((100 - fatigue) / 3)));
+    const sleepHours = 6 + (ovr % 3);
+    const sleepMinutes = (ovr * 5) % 60;
+    const sleepEfficiency = Math.max(80, Math.min(98, 86 + Math.round(fatigue / 7)));
+    const stressMs = Math.max(35, Math.min(90, 95 - fatigue));
+
+    setElementText('pldash-imc', imc.toFixed(1));
+    setElementText('pldash-resting-hr', restingHr);
+    setElementText('pldash-sleep', `${sleepHours}h ${String(sleepMinutes).padStart(2, '0')}m`);
+    setElementText('pldash-sleep-eff', `${sleepEfficiency}% Eficiencia`);
+    setElementText('pldash-stress-ms', `${stressMs} ms`);
+
+    const fatigueStatus = fatigue >= 88 ? 'Baja' : fatigue >= 74 ? 'Moderada' : 'Alta';
+    const fatiguePct = Math.max(5, 100 - fatigue);
+    setElementText('pldash-fatigue-status', fatigueStatus);
+    setElementText('pldash-fatigue-value', `${fatiguePct}% / 100%`);
+    setElementText('pldash-stress', stressMs <= 55 ? 'Bajo' : stressMs <= 70 ? 'Moderado' : 'Elevado');
+
+    renderPlayerDevices(p.Wearables);
+    renderKeyAttributes(p.Stats || {}, ovr);
+
     requestAnimationFrame(() => {
-      renderRadar(p.Stats, theme.primary);
-      if(radarChart) radarChart.resize(); 
+      renderRadar(p.Stats || {}, theme.primary, p.Bio.Pos);
+      if (radarChart) radarChart.resize();
     });
 
+    renderAvatar();
+    syncPlayerTopTabs('pl-profile');
     initIcons();
-    initIcons();
-
-    // History
-    renderHistory();
-  } catch(e) { console.error("Error en Update UI:", e); }
+  } catch (error) {
+    console.error('Error en Update UI:', error);
+  }
 }
 
-function renderHistory() {
-  const dbStr = localStorage.getItem('FutLab_DB_V1');
-  if(!dbStr) return;
-  const db = JSON.parse(dbStr);
-  const container = document.getElementById('routine-content'); // Reusing this for demo history
-  if(!container) return;
+function renderPlayerDevices(wearables) {
+  const container = document.getElementById('pldash-devices');
+  if (!container) return;
 
-  if(!db.history) return;
-
-  let html = `<div style="background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05); overflow:hidden;">
-    <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
-      <thead style="background:rgba(255,255,255,0.05);">
-        <tr>
-          <th style="padding:10px;text-align:left;color:var(--text-muted);">FECHA</th>
-          <th style="padding:10px;text-align:left;color:var(--text-muted);">FOCO</th>
-          <th style="padding:10px;text-align:right;color:var(--text-muted);">DURACIÓN</th>
-        </tr>
-      </thead>
-      <tbody>`;
-  
-  db.history.slice(0, 5).forEach(h => {
-    html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
-      <td style="padding:10px;color:#fff;font-weight:700;">${new Date(h.date).toLocaleDateString('es-ES',{day:'2-digit',month:'short'})}</td>
-      <td style="padding:10px;color:var(--text-muted);">${h.focus}</td>
-      <td style="padding:10px;text-align:right;color:#22c55e;font-weight:800;">${h.duration}</td>
-    </tr>`;
-  });
-  
-  html += `</tbody></table></div>`;
-  container.innerHTML = html;
-}
-
-function renderStatsGrid(stats, ovr, subs) {
-  const grid = document.getElementById('prf-stats-grid');
-  if(!grid) return;
-  
-  // Use real subattrs if available, or fall back to "invented" ones
-  const subStats = {
-    'Ritmo':   [['Aceleración', subs?.ace || Math.min(99, stats.Ritmo + 2)], ['V. Sprint', subs?.spr || Math.min(99, stats.Ritmo - 1)]],
-    'Tiro':    [['Finalización', subs?.fin || stats.Tiro], ['Potencia', subs?.pot || Math.min(99, stats.Tiro + 2)]],
-    'Pases':   [['Visión', subs?.vis || Math.min(99, stats.Pases + 2)], ['Pase Corto', subs?.pas || stats.Pases]],
-    'Regate':  [['Control', subs?.con || Math.min(99, stats.Regate + 1)], ['Regates', subs?.reg || Math.min(99, stats.Regate + 1)]],
-    'Defensa': [['Intercep.', subs?.int || Math.min(99, stats.Defensa + 3)], ['Entradas', subs?.ent || Math.min(99, stats.Defensa - 4)]],
-    'Físico':  [['Resistencia', subs?.res || Math.min(99, stats.Físico + 3)], ['Fuerza', subs?.fue || stats.Físico]],
-  };
-
-  const display = [
-    ['Ritmo', stats.Ritmo || ovr],
-    ['Pases', stats.Pases || ovr],
-    ['Tiro', stats.Tiro || Math.round(ovr * 0.85)],
-    ['Regate', stats.Regate || ovr],
-    ['Defensa', stats.Defensa || Math.round(ovr * 0.65)],
-    ['Físico', stats['Físico'] || stats.Físico || ovr]
+  const items = [
+    { icon: 'watch', label: 'Reloj inteligente', value: wearables?.appleWatch || '92%' },
+    { icon: 'circle', label: 'Anillo', value: wearables?.oura || 'ON' },
+    { icon: 'shield', label: 'Peto GPS', value: wearables?.peto || 'ON' }
   ];
 
-  let html = '';
-  display.forEach(([attr, val]) => {
-    const s = subStats[attr] || [];
-    const colorClass = 'prf-sub-val-good'; // Keep it positive for motivation
-    html += `
-      <div class="prf-stat-col">
-        <div class="prf-stat-header">
-          <span class="prf-stat-name">${attr.toUpperCase()}</span>
-          <span class="prf-stat-main-val">${Math.round(val)}</span>
-        </div>
-        ${s.map(([sn, sv]) => `
-          <div class="prf-sub-row">
-            <span class="prf-sub-name">${sn}</span>
-            <span class="${colorClass}">${Math.round(sv)}</span>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  });
-  
-  grid.innerHTML = html;
-  grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  container.innerHTML = items
+    .map(
+      (item) =>
+        `<span class="pldash-device-tag"><i data-lucide="${item.icon}" style="width:11px;"></i>${item.label}</span>`
+    )
+    .join('');
 }
 
-function renderRadar(stats, colorHex) {
+function renderKeyAttributes(stats, ovr) {
+  const container = document.getElementById('pldash-key-attrs');
+  if (!container) return;
+
+  const entries = [
+    ['Ritmo', stats.Ritmo || Math.max(40, ovr - 18)],
+    ['Tiro', stats.Tiro || Math.max(40, ovr - 24)],
+    ['Pases', stats.Pases || Math.max(40, ovr - 30)],
+    ['Regate', stats.Regate || Math.max(40, ovr - 21)],
+    ['Físico', stats['Físico'] || stats.Fisico || Math.max(40, ovr - 26)],
+    ['Defensa', stats.Defensa || Math.max(25, ovr - 50)]
+  ];
+
+  const minValue = Math.min(...entries.map((entry) => entry[1]));
+
+  container.innerHTML = entries
+    .map(([label, value]) => {
+      const width = Math.max(8, Math.min(100, Number(value)));
+      const lowClass = value === minValue ? 'is-low' : '';
+      return `
+        <div class="pldash-attr-row ${lowClass}">
+          <div class="pldash-attr-head">
+            <span>${label}</span>
+            <strong>${Math.round(value)}</strong>
+          </div>
+          <div class="pldash-attr-track"><div style="width:${width}%"></div></div>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderRadar(stats, colorHex, position) {
   const canvas = document.getElementById('chart-radar');
-  if(!canvas) { console.error("Canvas radar no encontrado"); return; }
-  
-  if (typeof Chart === 'undefined') { console.error("Chart.js no cargado"); return; }
+  if (!canvas || typeof Chart === 'undefined') return;
 
-  // Extra safety on color
-  if(!colorHex || colorHex === '#ffffff') colorHex = '#f59e0b'; // Gold fallback
+  const accent = colorHex || '#c9a227';
+  const order = ['Ritmo', 'Tiro', 'Pases', 'Regate', 'Defensa', 'Físico'];
+  const playerValues = order.map((label) => {
+    if (label === 'Físico') return stats['Físico'] || stats.Fisico || 0;
+    return stats[label] || 0;
+  });
+  const benchmark = getPositionBenchmark(position);
 
-  const catOrder = ['Ritmo', 'Tiro', 'Pases', 'Defensa', 'Físico', 'Regate'];
-  const values = catOrder.map(k => stats[k] || 0);
-  
-  console.log("Renderizando Radar:", values);
-
-  if(radarChart) radarChart.destroy();
+  if (radarChart) radarChart.destroy();
   radarChart = new Chart(canvas, {
     type: 'radar',
-    data: { 
-      labels: catOrder.map(l => l.toUpperCase()), 
-      datasets: [{ 
-        data: values, 
-        backgroundColor: colorHex + '44', 
-        borderColor: colorHex, 
-        borderWidth: 3, 
-        pointBackgroundColor: colorHex, 
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 4, 
-        pointHoverRadius: 6,
-        fill: true
-      }] 
+    data: {
+      labels: order.map((label) => label.toUpperCase()),
+      datasets: [
+        {
+          label: 'Jugador actual',
+          data: playerValues,
+          backgroundColor: `${accent}55`,
+          borderColor: accent,
+          borderWidth: 2.5,
+          pointBackgroundColor: accent,
+          pointRadius: 2,
+          fill: true
+        },
+        {
+          label: 'Media posición',
+          data: benchmark,
+          borderColor: 'rgba(203, 213, 225, 0.45)',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          fill: false
+        }
+      ]
     },
-    options: { 
-      responsive: true, 
-      maintainAspectRatio: false, 
-      layout: { padding: 5 }, 
-      scales: { 
-        r: { 
-          min: 0, 
-          max: 100, 
-          beginAtZero: true,
-          ticks: { display: false, stepSize: 20 }, 
-          grid: { color: 'rgba(255,255,255,0.2)', circular: false }, 
-          angleLines: { color: 'rgba(255,255,255,0.2)' }, 
-          pointLabels: { color: '#f8fafc', font: { size: 10, weight: '700', family: 'Satoshi' }, padding: 8 } 
-        } 
-      }, 
-      plugins: { legend: { display: false } } 
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: { display: false, stepSize: 20 },
+          grid: { color: 'rgba(255,255,255,0.13)' },
+          angleLines: { color: 'rgba(255,255,255,0.12)' },
+          pointLabels: {
+            color: '#e2e8f0',
+            font: { size: 11, weight: '700', family: 'Satoshi' }
+          }
+        }
+      }
     }
   });
 }
 
 function renderPlayerOverall() {
   const canvas = document.getElementById('chart-player-overall');
-  if(!canvas) { console.error("Canvas overall no encontrado"); return; }
-  if (typeof Chart === 'undefined') return;
+  if (!canvas || typeof Chart === 'undefined') return;
 
-  const data = [68, 70, 72, 75, 74, 78, 80, 82]; 
+  const data = [68, 70, 72, 75, 74, 78, 80, 82];
   const labels = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
-  const primary = getComputedStyle(document.documentElement).getPropertyValue('--team-primary').trim() || '#38bdf8';
+  const primary =
+    getComputedStyle(document.documentElement).getPropertyValue('--team-primary').trim() || '#c9a227';
 
-  console.log("Renderizando Overall Progression");
-
-  if(playerProgressChart) playerProgressChart.destroy();
+  if (playerProgressChart) playerProgressChart.destroy();
   playerProgressChart = new Chart(canvas, {
     type: 'line',
     data: {
-      labels: labels,
-      datasets: [{
-        label: 'Overall Projection',
-        data: data,
-        borderColor: primary,
-        backgroundColor: primary + '33',
-        borderWidth: 3,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: primary
-      }]
+      labels,
+      datasets: [
+        {
+          data,
+          borderColor: primary,
+          backgroundColor: `${primary}33`,
+          borderWidth: 3,
+          tension: 0.35,
+          fill: true,
+          pointRadius: 3,
+          pointBackgroundColor: primary
+        }
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { beginAtZero: false, min: 60, max: 100, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
-        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        y: {
+          beginAtZero: false,
+          min: 60,
+          max: 100,
+          grid: { color: 'rgba(255,255,255,0.1)' },
+          ticks: { color: '#94a3b8' }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8' }
+        }
       },
       plugins: { legend: { display: false } }
     }
   });
+}
+
+function syncPlayerTopTabs(activePageId) {
+  const tabs = document.querySelectorAll('#topnav-player .pl-tab[data-page]');
+  tabs.forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.page === activePageId);
+  });
+}
+
+function openPlayerTab(tabEl) {
+  if (!tabEl) return;
+  const pageId = tabEl.dataset.page;
+  if (!pageId) return;
+
+  const navMap = {
+    'pl-profile': 'nav-pl-profile',
+    'pl-evolution': 'nav-pl-evolution',
+    'pl-training': 'nav-pl-training'
+  };
+
+  const navEl = navMap[pageId] ? document.getElementById(navMap[pageId]) : null;
+  showPage(pageId, navEl || null);
+  syncPlayerTopTabs(pageId);
+}
+
+function updateRoutine() {
+  const target = document.getElementById('target-stat');
+  const container = document.getElementById('routine-content');
+  if (!target || !container) return;
+
+  const routines = {
+    ritmo: [
+      'Bloque 1: aceleraciones de 10m y 20m (6 repeticiones).',
+      'Bloque 2: cambios de dirección 45°/90° con balón (4 series).',
+      'Bloque 3: sprint final + definición en movimiento.'
+    ],
+    fisico: [
+      'Bloque 1: fuerza de tren inferior (sentadilla búlgara + zancadas).',
+      'Bloque 2: core anti-rotación y estabilidad pélvica.',
+      'Bloque 3: trabajo de resistencia específica con intervalos.'
+    ]
+  };
+
+  const selected = routines[target.value] || routines.ritmo;
+  container.innerHTML = `<ul style="margin:0; padding-left: 18px; display:grid; gap:10px;">${selected
+    .map((item) => `<li>${item}</li>`)
+    .join('')}</ul>`;
 }

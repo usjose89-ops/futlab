@@ -1,4 +1,12 @@
 // App bootstrap and centralized UI event delegation
+function updateDeviceClass() {
+  const isMobile = window.matchMedia('(max-width: 980px)').matches;
+  const vhUnit = window.innerHeight * 0.01;
+  document.body.classList.toggle('is-mobile', isMobile);
+  document.body.classList.toggle('is-desktop', !isMobile);
+  document.documentElement.style.setProperty('--app-vh', `${vhUnit}px`);
+}
+
 function wireGlobalUiEvents() {
   document.addEventListener('click', (event) => {
     const actionEl = event.target.closest('[data-action]');
@@ -46,6 +54,9 @@ function wireGlobalUiEvents() {
       case 'show-page':
         showPage(actionEl.dataset.page, actionEl);
         break;
+      case 'player-open-tab':
+        openPlayerTab(actionEl);
+        break;
       case 'show-alert':
         alert(actionEl.dataset.message || 'Próximamente...');
         break;
@@ -88,8 +99,10 @@ function wireGlobalUiEvents() {
 }
 
 window.onload = () => {
+  updateDeviceClass();
   initIcons();
   wireGlobalUiEvents();
+  window.addEventListener('resize', updateDeviceClass);
 
   // Pre-load demo data if missing.
   if (typeof initMockDB === 'function') initMockDB();

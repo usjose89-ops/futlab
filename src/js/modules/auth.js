@@ -89,6 +89,7 @@ function finishOnboarding() {
       stats: stats,
       ovr: ovr,
       status: FootballStatsEngine.getLevelLabel(ovr),
+      colorTheme: selectedTheme,
       wearables: { oura: 'ON', appleWatch: '100%', peto: 'ON' },
       fatigue: 100,
       payment: { plan: "Mensual", status: "Al Día" }
@@ -127,7 +128,7 @@ function convertToLegacyProfile(p) {
     Bio: { Nombre: p.name, Edad: p.age, Peso: p.weight, Estatura: p.height * 100, Pos: p.position, Foot: p.foot, Birthdate: p.birthdate },
     Stats: p.stats,
     Subattrs: p.subattrs,
-    Theme: 'gold',
+    Theme: p.colorTheme || 'rmadrid',
     Status: p.status,
     Wearables: p.wearables,
     Fatigue: p.fatigue,
@@ -164,6 +165,8 @@ function enterApp(mode) {
 
   // 4. Configurar según rol
   if (mode === 'dt') {
+    document.documentElement.style.setProperty('--team-primary', '#00f5d4');
+    document.documentElement.style.setProperty('--team-glow', 'rgba(0, 245, 212, 0.12)');
     const sDt = document.getElementById('sidebar-dt');
     const tDt = document.getElementById('topnav-dt');
     if (sDt) sDt.style.display = 'flex';
@@ -195,5 +198,6 @@ function logout() {
   }
   
   // Resetear tema
-  document.documentElement.style.setProperty('--team-primary', '#38bdf8');
+  document.documentElement.style.setProperty('--team-primary', '#22c55e');
+  document.documentElement.style.setProperty('--team-glow', 'rgba(34, 197, 94, 0.14)');
 }

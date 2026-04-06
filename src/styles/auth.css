@@ -403,6 +403,107 @@
   }
 }
 
+@media (max-width: 420px) {
+  .landing-topbar {
+    height: 66px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+  .landing-logo-image { height: 42px; }
+  .landing-nav-divider { font-size: 0.74rem; }
+  .landing-btn-signin {
+    font-size: 0.76rem;
+    padding: 8px 12px;
+    border-radius: 7px;
+  }
+
+  .landing-hero {
+    padding: 16px 10px 0;
+    gap: 10px;
+  }
+  .landing-hero-title {
+    font-size: clamp(1.78rem, 10vw, 2.35rem);
+    letter-spacing: -0.03em;
+  }
+  .landing-hero-desc {
+    font-size: 0.92rem;
+    line-height: 1.35;
+    max-width: 330px;
+  }
+  .landing-select-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+  }
+
+  .landing-cards {
+    gap: 10px;
+  }
+  .landing-card {
+    border-radius: 11px;
+  }
+  .landing-card-img {
+    height: 150px;
+  }
+  .landing-card-body {
+    padding: 12px;
+    gap: 7px;
+  }
+  .landing-card-tag {
+    font-size: 1.2rem;
+  }
+  .landing-card-tag i {
+    width: 16px;
+    height: 16px;
+  }
+  .landing-card-desc {
+    font-size: 0.86rem;
+    line-height: 1.32;
+  }
+  .landing-card-btn {
+    font-size: 0.79rem;
+    letter-spacing: 0.07em;
+  }
+
+  .landing-ticker {
+    width: calc(100% - 20px);
+    margin: 8px auto 10px;
+    padding: 10px 10px;
+    gap: 9px;
+  }
+  .landing-ticker-track span {
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+  }
+
+  .landing-footer {
+    padding: 10px 10px 14px;
+    gap: 8px;
+    font-size: 0.62rem;
+  }
+  .landing-footer-links {
+    gap: 10px;
+  }
+  .landing-footer-copy {
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (max-width: 370px) {
+  .landing-hero-title {
+    font-size: clamp(1.62rem, 9.2vw, 2.1rem);
+  }
+  .landing-hero-desc {
+    font-size: 0.86rem;
+  }
+  .landing-card-img {
+    height: 136px;
+  }
+  .landing-card-btn {
+    font-size: 0.74rem;
+  }
+}
+
 /* ═══ MODAL LOGIN ═══ */
 .login-modal-overlay {
   position: fixed; inset: 0; z-index: 3000;
@@ -426,8 +527,15 @@
 }
 .login-modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
 .login-modal-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.login-modal-logo-image {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 255, 170, 0.1));
 }
 .login-modal-title {
   font-size: 1.6rem; font-weight: 900; color: #fff; margin: 0 0 6px;
@@ -482,4 +590,73 @@
 .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-glass); }
 .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
+@media (max-width: 420px) {
+  .login-modal-card {
+    width: calc(100% - 18px);
+    max-width: none;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .login-modal-title {
+    font-size: 1.3rem;
+  }
+  .login-modal-logo-image {
+    height: 36px;
+  }
+  .login-modal-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 14px;
+  }
+  .ob-label {
+    font-size: 0.68rem;
+    margin-bottom: 7px;
+  }
+  .ob-input {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+  .login-demo-chips {
+    gap: 6px;
+  }
+  .demo-chip {
+    font-size: 0.7rem;
+    padding: 5px 9px;
+  }
+
+  .onboarding-overlay {
+    padding: 10px 0;
+  }
+  .onboarding-card {
+    width: calc(100% - 14px);
+    max-width: none;
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .ob-title {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  .ob-subtitle {
+    font-size: 0.86rem;
+    margin-bottom: 16px;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .ob-option {
+    padding: 12px;
+    font-size: 0.88rem;
+  }
+  .ob-footer {
+    margin-top: 18px;
+    padding-top: 12px;
+    gap: 8px;
+  }
+  .btn {
+    min-height: 40px;
+    padding: 9px 12px;
+    font-size: 0.84rem;
+  }
+}
 

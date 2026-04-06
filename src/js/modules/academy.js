@@ -4,6 +4,9 @@ function showPage(id, navEl) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById(id);
   if(page) page.classList.add('active');
+  if (typeof syncPlayerTopTabs === 'function' && id.startsWith('pl-')) {
+    syncPlayerTopTabs(id);
+  }
   
   if(navEl) {
     const parent = navEl.closest('.sidebar') || navEl.closest('.hud-sidebar');
@@ -19,6 +22,7 @@ function showPage(id, navEl) {
     if(id === 'dt-dashboard') renderRegionalKanban();
     if(id === 'dt-academy') renderManagerAcademyPanel();
     if(id === 'pl-evolution') renderPlayerOverall();
+    if(id === 'pl-training' && typeof updateRoutine === 'function') updateRoutine();
     if(id === 'pl-profile' && appState.profile) {
       renderRadar(appState.profile.Stats, THEME_PALETTES[appState.profile.Theme]?.primary || '#38bdf8');
       // Update label if exists

@@ -177,11 +177,11 @@ function enterApp(mode) {
   } else {
     const sPl = document.getElementById('sidebar-player');
     const tPl = document.getElementById('topnav-player');
-    if (sPl) sPl.style.display = 'flex';
+    if (sPl) sPl.style.display = 'none';
     if (tPl) tPl.style.display = 'flex';
     
     updatePlayerUI();
-    showPage('pl-profile', document.getElementById('nav-pl-profile'));
+    showPage('pl-profile', null);
   }
   
   initIcons();

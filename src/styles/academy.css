@@ -60,6 +60,21 @@
   white-space: nowrap;
 }
 
+.dt-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
 /* Manager Academy Command Surface */
 .academy-command-header {
   display: flex;
@@ -954,14 +969,7 @@
   }
 
   #sidebar-dt .hud-logo {
-    display: flex;
-    border-bottom: 0;
-    margin-bottom: 0;
-    padding: 0 8px 0 0;
-  }
-
-  #sidebar-dt .hud-logo-image {
-    height: 30px;
+    display: none;
   }
 
   #sidebar-dt .hud-nav-item {
@@ -1110,8 +1118,10 @@
     height: 24px;
   }
 
-  #sidebar-dt .hud-logo-image {
-    height: 24px;
+  .dt-logout-btn {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 0.61rem;
   }
 
   .academy-command-header h1 {

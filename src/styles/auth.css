@@ -8,6 +8,20 @@
   max-height: 100dvh;
 }
 
+@media (max-width: 980px) {
+  #screen-login {
+    height: auto;
+    max-height: none;
+    min-height: calc(var(--app-vh, 1dvh) * 100);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .landing-hero {
+    flex: 0 0 auto;
+  }
+}
+
 .landing-bg {
   position: absolute;
   inset: 0;

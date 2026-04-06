@@ -817,11 +817,100 @@
 
 
 
-      <div id="pl-evolution" class="page hud-content">
-        <div class="page-title">Tu Evolución Analítica</div>
-        <div class="grid-2">
-          <div class="card"><div class="card-title">Overall (Proyección 8 semanas)</div><div class="chart-container-regular"><canvas id="chart-player-overall"></canvas></div></div>
-        </div>
+      <div id="pl-evolution" class="page plevo-page">
+        <section class="plevo-top-kpis">
+          <article class="plevo-kpi-card plevo-kpi-main">
+            <span>Puntaje General</span>
+            <strong id="plevo-overall-now">81</strong>
+            <small id="plevo-overall-gain">vs 58 (+23)</small>
+          </article>
+          <article class="plevo-kpi-card">
+            <span>Racha Actual</span>
+            <strong id="plevo-streak">5</strong>
+            <small>Semanas</small>
+          </article>
+          <article class="plevo-kpi-card">
+            <span>Mejor Atributo</span>
+            <strong id="plevo-best-attr">Ritmo 94</strong>
+          </article>
+          <article class="plevo-kpi-card">
+            <span>Próximo Test</span>
+            <strong id="plevo-next-test">Sep 12</strong>
+          </article>
+        </section>
+
+        <section class="plevo-middle-grid">
+          <article class="plevo-ovr-card">
+            <div class="plevo-ovr-head">
+              <div>
+                <h3>Evolución OVR</h3>
+                <p>Histórico de rendimiento anual</p>
+              </div>
+              <span class="plevo-pill" id="plevo-total-pill">+23 total</span>
+            </div>
+            <div class="plevo-chart-wrap">
+              <canvas id="chart-player-overall"></canvas>
+            </div>
+          </article>
+
+          <aside class="plevo-period-card">
+            <h4>Resumen del Periodo</h4>
+            <div class="plevo-summary-grid">
+              <div><strong id="plevo-summary-matches">12</strong><span>Partidos</span></div>
+              <div><strong id="plevo-summary-tests">3</strong><span>Tests</span></div>
+              <div><strong id="plevo-summary-sessions">24</strong><span>Sesiones</span></div>
+              <div><strong id="plevo-summary-total">+23</strong><span>Total OVR</span></div>
+            </div>
+
+            <h4>Consistencia</h4>
+            <div id="plevo-consistency" class="plevo-consistency-grid"></div>
+            <div class="plevo-consistency-labels">
+              <span>Menos</span>
+              <span>Más</span>
+            </div>
+          </aside>
+        </section>
+
+        <section class="plevo-bottom-grid">
+          <article class="plevo-compare-card">
+            <h3>Comparativa de Atributos</h3>
+            <div id="plevo-compare-bars"></div>
+            <div class="plevo-compare-legend">
+              <span><i class="is-start"></i>Inicio</span>
+              <span><i class="is-now"></i>Ahora</span>
+            </div>
+          </article>
+
+          <article class="plevo-breakdown-card">
+            <div class="plevo-breakdown-head">
+              <h3>Desglose de Atributos</h3>
+              <span>Detalle Pro</span>
+            </div>
+            <div class="plevo-breakdown-grid">
+              <div id="plevo-breakdown-left"></div>
+              <div id="plevo-breakdown-right"></div>
+            </div>
+            <div class="plevo-analysis" id="plevo-analysis"></div>
+          </article>
+        </section>
+
+        <section class="plevo-timeline-card">
+          <h3>Línea de Tiempo de Evolución</h3>
+          <div class="plevo-timeline-row" id="plevo-timeline"></div>
+        </section>
+
+        <section class="plevo-goal-card">
+          <div>
+            <span class="plevo-goal-chip">Nivel proyectado</span>
+            <h3 id="plevo-goal-title">Élite Profesional</h3>
+            <p id="plevo-goal-text"></p>
+          </div>
+          <div class="plevo-goal-progress">
+            <span>Meta cumplida</span>
+            <strong id="plevo-goal-progress">100%</strong>
+            <small>Progreso</small>
+          </div>
+        </section>
       </div>
 
       <div id="pl-training" class="page hud-content">

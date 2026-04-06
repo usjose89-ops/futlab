@@ -328,14 +328,274 @@ function renderRadar(stats, colorHex, position) {
   });
 }
 
+function clipStat(value, min = 20, max = 99) {
+  return Math.max(min, Math.min(max, Number(value) || min));
+}
+
+function averageEqual(values) {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  const sum = values.reduce((acc, current) => acc + Number(current || 0), 0);
+  return Math.round(sum / values.length);
+}
+
+function getSubValue(subattrs, key, fallback) {
+  if (subattrs && Number.isFinite(Number(subattrs[key]))) return Number(subattrs[key]);
+  return Number(fallback);
+}
+
+function buildEvolutionModel(profile) {
+  const stats = profile?.Stats || {};
+  const subattrs = profile?.Subattrs || {};
+  const fatigue = Number.isFinite(Number(profile?.Fatigue)) ? Number(profile.Fatigue) : 82;
+  const currentOvrInput = clipStat(profile?.Ovr || 78, 45, 99);
+
+  const componentMap = {
+    Ritmo: [
+      ['Aceleración', clipStat(getSubValue(subattrs, 'ace', (stats.Ritmo || currentOvrInput) + 2))],
+      ['Vel. Sprint', clipStat(getSubValue(subattrs, 'spr', (stats.Ritmo || currentOvrInput) - 1))]
+    ],
+    Tiro: [
+      ['Ataque', clipStat(getSubValue(subattrs, 'fin', stats.Tiro || currentOvrInput - 4))],
+      ['Definición', clipStat(getSubValue(subattrs, 'fin', stats.Tiro || currentOvrInput - 4))],
+      ['Potencia', clipStat(getSubValue(subattrs, 'pot', (stats.Tiro || currentOvrInput - 4) + 1))],
+      ['Tiros lejanos', clipStat((stats.Tiro || currentOvrInput - 4) - 2)]
+    ],
+    Pase: [
+      ['Visión', clipStat(getSubValue(subattrs, 'vis', stats.Pases || currentOvrInput - 6))],
+      ['Pase corto', clipStat(getSubValue(subattrs, 'pas', stats.Pases || currentOvrInput - 6))],
+      ['Efecto', clipStat((stats.Pases || currentOvrInput - 6) - 2)]
+    ],
+    Regate: [
+      ['Agilidad', clipStat((stats.Regate || currentOvrInput - 3) - 3)],
+      ['Equilibrio', clipStat((stats.Regate || currentOvrInput - 3) - 4)],
+      ['Reacciones', clipStat((stats.Regate || currentOvrInput - 3) + 1)],
+      ['Control balón', clipStat(getSubValue(subattrs, 'con', stats.Regate || currentOvrInput - 3))],
+      ['Regates', clipStat(getSubValue(subattrs, 'reg', (stats.Regate || currentOvrInput - 3) + 2))],
+      ['Compostura', clipStat((stats.Regate || currentOvrInput - 3) + 3)]
+    ],
+    Físico: [
+      ['Resistencia', clipStat(getSubValue(subattrs, 'res', stats['Físico'] || stats.Fisico || currentOvrInput - 2))],
+      ['Fuerza', clipStat(getSubValue(subattrs, 'fue', stats['Físico'] || stats.Fisico || currentOvrInput - 2))]
+    ],
+    Defensa: [
+      ['Intercep.', clipStat(getSubValue(subattrs, 'int', stats.Defensa || currentOvrInput - 30))],
+      ['Cabeza', clipStat((stats.Defensa || currentOvrInput - 30) + 14)]
+    ]
+  };
+
+  const mainAttrs = {};
+  Object.entries(componentMap).forEach(([attr, components]) => {
+    mainAttrs[attr] = averageEqual(components.map((entry) => entry[1]));
+  });
+
+  const overallNow = clipStat(averageEqual(Object.values(mainAttrs)), 45, 99);
+  const baselineOverall = clipStat(overallNow - Math.max(12, Math.min(26, Math.round(overallNow * 0.28))), 45, 96);
+  const totalGain = Math.max(2, overallNow - baselineOverall);
+
+  const months = ['FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO'];
+  const growthCurve = [0, 0.18, 0.37, 0.57, 0.69, 0.79, 1];
+  const series = months.map((_, idx) => clipStat(Math.round(baselineOverall + totalGain * growthCurve[idx]), 40, 99));
+  series[series.length - 1] = overallNow;
+
+  const initialDrop = {
+    Ritmo: 0.35,
+    Tiro: 0.42,
+    Pase: 0.4,
+    Regate: 0.36,
+    Defensa: 0.52,
+    Físico: 0.44
+  };
+
+  const startAttrs = {};
+  Object.entries(mainAttrs).forEach(([key, value]) => {
+    const decrement = Math.max(2, Math.round(totalGain * (initialDrop[key] || 0.4)));
+    startAttrs[key] = clipStat(value - decrement, 20, 98);
+  });
+
+  const sorted = Object.entries(mainAttrs).sort((a, b) => b[1] - a[1]);
+  const best = sorted[0];
+  const second = sorted[1];
+
+  return {
+    componentMap,
+    mainAttrs,
+    startAttrs,
+    overallNow,
+    baselineOverall,
+    totalGain,
+    months,
+    series,
+    projection: clipStat(overallNow + Math.max(1, Math.round(totalGain * 0.1)), 50, 99),
+    streak: Math.max(2, Math.min(9, Math.round(totalGain / 4) + 2)),
+    readiness: Math.max(55, Math.min(98, fatigue)),
+    bestAttrName: best ? best[0] : 'Ritmo',
+    bestAttrValue: best ? best[1] : 0,
+    secondAttrName: second ? second[0] : 'Regate',
+    secondAttrValue: second ? second[1] : 0
+  };
+}
+
+function renderEvolutionCompareBars(model) {
+  const container = document.getElementById('plevo-compare-bars');
+  if (!container) return;
+
+  const order = ['Ritmo', 'Tiro', 'Pase', 'Regate', 'Defensa', 'Físico'];
+  container.innerHTML = order
+    .map((attr) => {
+      const startVal = model.startAttrs[attr];
+      const currentVal = model.mainAttrs[attr];
+      return `
+        <div class="plevo-compare-row">
+          <div class="plevo-compare-head">
+            <span>${attr}</span>
+            <strong>${currentVal}</strong>
+          </div>
+          <div class="plevo-compare-track">
+            <div class="plevo-compare-start" style="width:${startVal}%"></div>
+            <div class="plevo-compare-now" style="width:${currentVal}%"></div>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderEvolutionBreakdown(model) {
+  const left = document.getElementById('plevo-breakdown-left');
+  const right = document.getElementById('plevo-breakdown-right');
+  if (!left || !right) return;
+
+  const leftGroups = ['Regate', 'Tiro', 'Pase'];
+  const rightGroups = ['Ritmo', 'Físico', 'Defensa'];
+
+  const renderGroups = (groups) =>
+    groups
+      .map((groupName) => {
+        const rows = model.componentMap[groupName] || [];
+        return `
+          <div class="plevo-break-group">
+            <h5>${groupName.toUpperCase()}</h5>
+            ${rows
+              .map(
+                (row) =>
+                  `<div class="plevo-break-row"><span>${row[0]}</span><strong>${row[1]}</strong></div>`
+              )
+              .join('')}
+          </div>
+        `;
+      })
+      .join('');
+
+  left.innerHTML = renderGroups(leftGroups);
+  right.innerHTML = renderGroups(rightGroups);
+
+  const analysis = document.getElementById('plevo-analysis');
+  if (analysis) {
+    analysis.innerHTML = `<strong>Análisis FutLab:</strong> Rendimiento destacado en ${model.bestAttrName} (${model.bestAttrValue}) y ${model.secondAttrName} (${model.secondAttrValue}). La media ponderada de componentes mantiene consistencia técnica durante el ciclo.`;
+  }
+}
+
+function renderEvolutionConsistency(model) {
+  const container = document.getElementById('plevo-consistency');
+  if (!container) return;
+
+  const cells = new Array(28).fill(0).map((_, idx) => {
+    const base = (idx * 17 + model.totalGain * 3) % 100;
+    if (base > 75) return 4;
+    if (base > 60) return 3;
+    if (base > 45) return 2;
+    if (base > 30) return 1;
+    return 0;
+  });
+
+  container.innerHTML = cells
+    .map((level) => `<span class="plevo-consistency-cell level-${level}"></span>`)
+    .join('');
+}
+
+function renderEvolutionTimeline(model) {
+  const container = document.getElementById('plevo-timeline');
+  if (!container) return;
+
+  const points = [
+    { value: model.baselineOverall, date: 'Feb 2025', text: 'Evaluación Inicial' },
+    { value: model.series[1], date: 'Mar 2025', text: 'Ingreso Academia' },
+    { value: model.mainAttrs[model.bestAttrName], date: 'May 2025', text: `Salto ${model.bestAttrName}` },
+    { value: model.series[4], date: 'Jun 2025', text: 'Consolidación Técnica' },
+    { value: model.secondAttrValue, date: 'Ago 2025', text: 'Rendimiento Peak' },
+    { value: model.overallNow, date: 'Hoy', text: 'Estado Actual' }
+  ];
+
+  container.innerHTML = points
+    .map(
+      (point, idx) => `
+        <div class="plevo-time-item ${idx === points.length - 1 ? 'is-final' : ''}">
+          <div class="plevo-time-badge">${point.value}</div>
+          <strong>${point.date}</strong>
+          <span>${point.text}</span>
+        </div>
+      `
+    )
+    .join('');
+}
+
 function renderPlayerOverall() {
   const canvas = document.getElementById('chart-player-overall');
-  if (!canvas || typeof Chart === 'undefined') return;
+  if (!canvas || typeof Chart === 'undefined' || !appState.profile) return;
 
-  const data = [68, 70, 72, 75, 74, 78, 80, 82];
-  const labels = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
-  const primary =
-    getComputedStyle(document.documentElement).getPropertyValue('--team-primary').trim() || '#c9a227';
+  const model = buildEvolutionModel(appState.profile);
+  const primary = getComputedStyle(document.documentElement).getPropertyValue('--team-primary').trim() || '#c9a227';
+
+  setElementText('plevo-overall-now', model.overallNow);
+  setElementText('plevo-overall-gain', `vs ${model.baselineOverall} (+${model.totalGain})`);
+  setElementText('plevo-streak', model.streak);
+  setElementText('plevo-best-attr', `${model.bestAttrName} ${model.bestAttrValue}`);
+  setElementText('plevo-total-pill', `+${model.totalGain} total`);
+  setElementText('plevo-summary-total', `+${model.totalGain}`);
+
+  const dbStr = localStorage.getItem('FutLab_DB_V1');
+  let sessions = 24;
+  let tests = 3;
+  let matches = 12;
+  let nextTestText = 'Sep 12';
+
+  if (dbStr) {
+    const db = JSON.parse(dbStr);
+    if (Array.isArray(db.history) && db.history.length > 0) {
+      sessions = Math.max(12, Math.min(32, db.history.length));
+      tests = Math.max(2, Math.round(sessions / 8));
+      matches = Math.max(8, Math.round(sessions / 2));
+      const lastDate = new Date(db.history[db.history.length - 1].date);
+      if (!Number.isNaN(lastDate.getTime())) {
+        lastDate.setDate(lastDate.getDate() + 14);
+        nextTestText = lastDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+      }
+    }
+  }
+
+  setElementText('plevo-next-test', nextTestText);
+  setElementText('plevo-summary-matches', matches);
+  setElementText('plevo-summary-tests', tests);
+  setElementText('plevo-summary-sessions', sessions);
+
+  const goalProgress = Math.min(100, Math.max(12, Math.round((model.overallNow / 90) * 100)));
+  setElementText('plevo-goal-progress', `${goalProgress}%`);
+  setElementText(
+    'plevo-goal-text',
+    `Has superado la meta inicial. Con un OVR de ${model.overallNow} y atributos de ${model.bestAttrName.toLowerCase()} (${model.bestAttrValue}) y ${model.secondAttrName.toLowerCase()} (${model.secondAttrValue}), mantienes un perfil competitivo sostenido.`
+  );
+
+  const goalTitle = goalProgress >= 95 ? 'Élite Profesional' : goalProgress >= 80 ? 'Competitivo Alto' : 'En Consolidación';
+  setElementText('plevo-goal-title', goalTitle);
+
+  renderEvolutionConsistency(model);
+  renderEvolutionCompareBars(model);
+  renderEvolutionBreakdown(model);
+  renderEvolutionTimeline(model);
+
+  const labels = [...model.months, 'PROY'];
+  const actualSeries = [...model.series, null];
+  const projectionSeries = new Array(model.months.length - 1).fill(null).concat([model.series[model.series.length - 1], model.projection]);
 
   if (playerProgressChart) playerProgressChart.destroy();
   playerProgressChart = new Chart(canvas, {
@@ -344,34 +604,44 @@ function renderPlayerOverall() {
       labels,
       datasets: [
         {
-          data,
+          data: actualSeries,
           borderColor: primary,
-          backgroundColor: `${primary}33`,
-          borderWidth: 3,
-          tension: 0.35,
+          backgroundColor: `${primary}2a`,
+          borderWidth: 4,
           fill: true,
+          tension: 0.34,
           pointRadius: 3,
+          pointHoverRadius: 4,
           pointBackgroundColor: primary
+        },
+        {
+          data: projectionSeries,
+          borderColor: `${primary}99`,
+          borderWidth: 2,
+          borderDash: [6, 6],
+          fill: false,
+          tension: 0.34,
+          pointRadius: 0
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
       scales: {
         y: {
           beginAtZero: false,
-          min: 60,
+          min: Math.max(45, model.baselineOverall - 4),
           max: 100,
-          grid: { color: 'rgba(255,255,255,0.1)' },
-          ticks: { color: '#94a3b8' }
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          ticks: { color: '#94a3b8', stepSize: 5 }
         },
         x: {
-          grid: { display: false },
-          ticks: { color: '#94a3b8' }
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: { color: '#cbd5e1', font: { size: 11, weight: '700' } }
         }
-      },
-      plugins: { legend: { display: false } }
+      }
     }
   });
 }

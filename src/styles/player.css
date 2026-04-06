@@ -1851,3 +1851,587 @@
     font-size: 1.35rem;
   }
 }
+
+/* ======================================================================
+   PLAYER EVOLUTION TAB (reference-inspired)
+====================================================================== */
+.plevo-page {
+  padding: 18px;
+  overflow: auto;
+  background: radial-gradient(circle at 80% -20%, rgba(201, 162, 39, 0.12), transparent 46%),
+    linear-gradient(180deg, #050f2e 0%, #040d25 100%);
+}
+
+.plevo-top-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plevo-kpi-card,
+.plevo-ovr-card,
+.plevo-period-card,
+.plevo-compare-card,
+.plevo-breakdown-card,
+.plevo-timeline-card,
+.plevo-goal-card {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(16, 25, 51, 0.96), rgba(10, 20, 44, 0.9));
+  box-shadow: 0 14px 34px rgba(1, 8, 23, 0.32);
+}
+
+.plevo-kpi-card {
+  padding: 16px;
+  min-height: 88px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.plevo-kpi-card span {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.plevo-kpi-card strong {
+  font-size: 2rem;
+  line-height: 1;
+  color: #f8fafc;
+}
+
+.plevo-kpi-card small {
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.plevo-kpi-main {
+  border-left: 3px solid var(--team-primary);
+}
+
+.plevo-middle-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr);
+  gap: 12px;
+}
+
+.plevo-ovr-card {
+  padding: 16px;
+}
+
+.plevo-ovr-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.plevo-ovr-head h3 {
+  color: #f8fafc;
+  font-size: 2rem;
+}
+
+.plevo-ovr-head p {
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.plevo-pill {
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #f1deb4;
+  border: 1px solid rgba(201, 162, 39, 0.42);
+  background: rgba(201, 162, 39, 0.12);
+}
+
+.plevo-chart-wrap {
+  margin-top: 10px;
+  height: 340px;
+}
+
+.plevo-period-card {
+  padding: 16px;
+}
+
+.plevo-period-card h4 {
+  color: #f8fafc;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+}
+
+.plevo-summary-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.plevo-summary-grid > div {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 7, 24, 0.5);
+  text-align: center;
+}
+
+.plevo-summary-grid strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.plevo-summary-grid span {
+  margin-top: 4px;
+  display: block;
+  color: #9ca3af;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+}
+
+.plevo-summary-grid > div:last-child {
+  border-color: rgba(201, 162, 39, 0.45);
+  background: rgba(201, 162, 39, 0.12);
+}
+
+.plevo-summary-grid > div:last-child strong {
+  color: #f1deb4;
+}
+
+.plevo-period-card h4:nth-of-type(2) {
+  margin-top: 16px;
+}
+
+.plevo-consistency-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  gap: 4px;
+}
+
+.plevo-consistency-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.plevo-consistency-cell.level-1 { background: rgba(201, 162, 39, 0.28); }
+.plevo-consistency-cell.level-2 { background: rgba(201, 162, 39, 0.45); }
+.plevo-consistency-cell.level-3 { background: rgba(201, 162, 39, 0.62); }
+.plevo-consistency-cell.level-4 { background: rgba(241, 222, 180, 0.92); }
+
+.plevo-consistency-labels {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.plevo-bottom-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.25fr);
+  gap: 12px;
+}
+
+.plevo-compare-card,
+.plevo-breakdown-card {
+  padding: 16px;
+}
+
+.plevo-compare-card h3,
+.plevo-breakdown-head h3 {
+  color: #f8fafc;
+  font-size: 1.9rem;
+}
+
+#plevo-compare-bars {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.plevo-compare-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.plevo-compare-head span {
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.plevo-compare-head strong {
+  color: #f1deb4;
+  font-size: 0.9rem;
+}
+
+.plevo-compare-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.plevo-compare-start,
+.plevo-compare-now {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+}
+
+.plevo-compare-start {
+  background: rgba(132, 140, 160, 0.42);
+}
+
+.plevo-compare-now {
+  background: linear-gradient(90deg, #c09c49, #f0d89a);
+}
+
+.plevo-compare-legend {
+  margin-top: 12px;
+  display: flex;
+  gap: 14px;
+}
+
+.plevo-compare-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.plevo-compare-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.plevo-compare-legend i.is-start { background: rgba(132, 140, 160, 0.7); }
+.plevo-compare-legend i.is-now { background: #f0d89a; }
+
+.plevo-breakdown-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plevo-breakdown-head span {
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #f1deb4;
+  background: rgba(201, 162, 39, 0.16);
+  border: 1px solid rgba(201, 162, 39, 0.34);
+}
+
+.plevo-breakdown-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.plevo-break-group {
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plevo-break-group h5 {
+  color: #f1deb4;
+  font-size: 0.72rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.plevo-break-row {
+  margin-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.plevo-break-row span {
+  color: #cbd5e1;
+  font-size: 0.78rem;
+}
+
+.plevo-break-row strong {
+  color: #f8fafc;
+  font-size: 0.82rem;
+}
+
+.plevo-analysis {
+  margin-top: 12px;
+  border-radius: 10px;
+  padding: 11px;
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  background: rgba(201, 162, 39, 0.08);
+  color: #dbe7ff;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.plevo-analysis strong {
+  color: #f1deb4;
+}
+
+.plevo-timeline-card {
+  margin-top: 12px;
+  padding: 16px;
+}
+
+.plevo-timeline-card h3 {
+  color: #f8fafc;
+  font-size: 1.7rem;
+}
+
+.plevo-timeline-row {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.plevo-time-item {
+  position: relative;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.plevo-time-badge {
+  margin: 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.plevo-time-item strong {
+  margin-top: 8px;
+  display: block;
+  color: #f8fafc;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.plevo-time-item span {
+  margin-top: 4px;
+  display: block;
+  color: #94a3b8;
+  font-size: 0.66rem;
+}
+
+.plevo-time-item.is-final .plevo-time-badge {
+  background: linear-gradient(90deg, #b89339, #f1deb4);
+  color: #231b08;
+  border-color: rgba(201, 162, 39, 0.75);
+}
+
+.plevo-goal-card {
+  margin-top: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.plevo-goal-chip {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #f1deb4;
+  background: rgba(201, 162, 39, 0.12);
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 800;
+}
+
+#plevo-goal-title {
+  margin-top: 8px;
+  color: #f8fafc;
+  font-size: 2.8rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+#plevo-goal-text {
+  margin-top: 10px;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  max-width: 760px;
+}
+
+.plevo-goal-progress {
+  min-width: 180px;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(2, 6, 23, 0.42);
+  text-align: center;
+}
+
+.plevo-goal-progress span,
+.plevo-goal-progress small {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.plevo-goal-progress strong {
+  margin: 6px 0;
+  display: block;
+  color: #f1deb4;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+@media (max-width: 1280px) {
+  .plevo-top-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .plevo-middle-grid,
+  .plevo-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plevo-timeline-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #plevo-goal-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .plevo-page {
+    padding: 12px;
+  }
+
+  .plevo-chart-wrap {
+    height: 280px;
+  }
+
+  .plevo-breakdown-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plevo-goal-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .plevo-goal-progress {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .plevo-top-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .plevo-kpi-card,
+  .plevo-ovr-card,
+  .plevo-period-card,
+  .plevo-compare-card,
+  .plevo-breakdown-card,
+  .plevo-timeline-card,
+  .plevo-goal-card {
+    padding: 12px;
+  }
+
+  .plevo-kpi-card strong,
+  .plevo-summary-grid strong {
+    font-size: 1.6rem;
+  }
+
+  .plevo-ovr-head h3,
+  .plevo-compare-card h3,
+  .plevo-breakdown-head h3,
+  .plevo-timeline-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .plevo-chart-wrap {
+    height: 230px;
+  }
+
+  .plevo-timeline-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #plevo-goal-title {
+    font-size: 1.65rem;
+  }
+
+  #plevo-goal-text {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .plevo-page {
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+
+  .plevo-chart-wrap {
+    height: 205px;
+  }
+
+  .plevo-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plevo-timeline-row {
+    grid-template-columns: 1fr;
+  }
+}
